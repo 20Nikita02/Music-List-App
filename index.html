@@ -2,705 +2,448 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>My Music List</title>
-  <meta name="theme-color" content="#111111" />
   <style>
-    :root{
-      --bg:#0b0b0c; --card:#141416; --muted:#a9a9b2; --text:#f1f1f4;
-      --border:#242427; --accent:#ffffff; --danger:#ff4d4d;
+    :root { --bg:#0b0c10; --card:#12141a; --muted:#a7adbb; --text:#eef1f7; --line:#222634; --accent:#7aa2ff; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:var(--bg); color:var(--text);
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: linear-gradient(180deg, rgba(11,12,16,.98), rgba(11,12,16,.88));
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 14px 10px;
     }
-    header{
-      position:sticky; top:0; z-index:5;
-      background:rgba(11,11,12,.92); backdrop-filter: blur(10px);
-      border-bottom:1px solid var(--border);
-      padding:14px 14px 10px;
+    h1 { margin: 0 0 8px; font-size: 18px; letter-spacing: .2px; }
+    .row { display: flex; gap: 10px; }
+    input, select, button {
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      padding: 10px 10px;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
     }
-    .titleRow{display:flex; align-items:center; justify-content:space-between; gap:10px;}
-    h1{font-size:18px; margin:0; letter-spacing:.2px;}
-    .stats{font-size:12px; color:var(--muted); margin-top:6px; display:flex; gap:10px; flex-wrap:wrap;}
-    .pill{
-      border:1px solid var(--border);
-      padding:6px 10px; border-radius:999px; font-size:12px; color:var(--muted);
-      background:rgba(20,20,22,.7);
+    input::placeholder { color: #7f8796; }
+    button { cursor: pointer; }
+    button.primary { background: #1a2240; border-color: #2a3a7a; }
+    button.ghost { background: transparent; }
+    .wrap { padding: 12px 14px 40px; }
+    .controls { display: grid; gap: 10px; }
+    .controls .row { align-items: center; }
+    .row > * { flex: 1; }
+    .row .small { flex: 0 0 auto; }
+    .stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin: 10px 0 0;
     }
-    main{padding:14px; padding-bottom:110px;}
-    .card{
-      background:var(--card); border:1px solid var(--border);
-      border-radius:16px; padding:12px; margin-bottom:12px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.25);
+    .pill {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--muted);
     }
-    .row{display:flex; gap:10px; align-items:center;}
-    .row > *{min-width:0}
-    label{font-size:12px; color:var(--muted); display:block; margin-bottom:6px;}
-    input, select, textarea{
-      width:100%; border-radius:12px; border:1px solid var(--border);
-      background:#0f0f10; color:var(--text);
-      padding:11px 12px; outline:none;
-      font-size:14px;
+    .pill b { color: var(--text); font-size: 14px; }
+    .list { margin-top: 12px; display: grid; gap: 10px; }
+    details {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
     }
-    textarea{resize:vertical; min-height:44px;}
-    button{
-      border:1px solid var(--border); background:#101012; color:var(--text);
-      padding:10px 12px; border-radius:12px; font-size:14px;
+    summary {
+      list-style: none;
+      padding: 12px 12px;
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer;
     }
-    button:active{transform:scale(.99)}
-    .btnPrimary{background:var(--accent); color:#000; border-color:transparent; font-weight:600;}
-    .btnDanger{background:transparent; border-color:#3a1b1b; color:#ffb3b3;}
-    .btnGhost{background:transparent;}
-    .controls{
-      display:grid; grid-template-columns: 1fr; gap:10px;
+    summary::-webkit-details-marker { display:none; }
+    .artistNo {
+      flex: 0 0 auto;
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      background: #171b26;
+      border: 1px solid var(--line);
+      display: grid; place-items: center;
+      font-weight: 700; color: var(--accent);
     }
-    .controls2{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
-    .small{font-size:12px; color:var(--muted);}
-    .listHeader{
-      display:flex; justify-content:space-between; align-items:center;
-      margin:14px 0 10px;
+    .artistMeta { display:flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .artistName { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .artistCount { font-size: 12px; color: var(--muted); }
+    .songs { border-top: 1px solid var(--line); padding: 6px 8px 10px; display: grid; gap: 6px; }
+    .songRow {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 8px;
+      border-radius: 12px;
     }
-    .listHeader h2{font-size:14px; margin:0; color:var(--muted); font-weight:600;}
-    .songCard{
-      padding:12px;
-      display:flex; flex-direction:column; gap:8px;
+    .songRow:hover { background: rgba(255,255,255,.03); }
+    .songNums {
+      font-size: 11px; color: var(--muted);
+      line-height: 1.15;
     }
-    .songTop{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    .songNums b { color: var(--text); font-size: 12px; }
+    .songTitle { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tags { display: flex; gap: 6px; align-items:center; }
+    .tag {
+      font-size: 11px; color: var(--muted);
+      border: 1px solid var(--line);
+      padding: 5px 8px;
+      border-radius: 999px;
     }
-    .songMain{display:flex; flex-direction:column; gap:2px;}
-    .songTitle{font-size:15px; font-weight:650; line-height:1.2}
-    .songMeta{font-size:12px; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap;}
-    .nums{
-      font-variant-numeric: tabular-nums;
-      font-size:12px; color:var(--muted);
-      border:1px solid var(--border); background:#0f0f10;
-      padding:6px 10px; border-radius:999px; white-space:nowrap;
+    .tag.fav { color: #ffd58a; border-color: #3a2f1a; background: rgba(255,213,138,.06); }
+    .actions { display:flex; gap: 6px; }
+    .iconBtn {
+      width: 36px; height: 36px;
+      border-radius: 12px;
+      display:grid; place-items:center;
+      background: transparent;
+      border: 1px solid var(--line);
     }
-    .star{
-      font-size:18px; line-height:1; padding:8px 10px;
-      border-radius:12px; border:1px solid var(--border);
-      background:#0f0f10;
-    }
-    .star.on{background:#1a1a1d; border-color:#3a3a3f;}
-    .songActions{
-      display:flex; gap:8px; flex-wrap:wrap;
-    }
-    details{
-      border-top:1px solid var(--border);
-      padding-top:10px;
-    }
-    summary{cursor:pointer; color:var(--muted); font-size:13px; list-style:none;}
-    summary::-webkit-details-marker{display:none}
-    .footerBar{
-      position:fixed; left:0; right:0; bottom:0; z-index:6;
-      background:rgba(11,11,12,.92); backdrop-filter: blur(10px);
-      border-top:1px solid var(--border);
-      padding:12px 14px calc(12px + env(safe-area-inset-bottom));
-    }
-    .footerRow{display:flex; gap:10px;}
-    .footerRow button{flex:1}
-    .divider{height:1px; background:var(--border); margin:10px 0;}
-    .hidden{display:none !important;}
-    .mono{font-variant-numeric: tabular-nums;}
-    .hint{font-size:12px; color:var(--muted); margin-top:6px;}
-    .group{
-      margin-bottom:14px;
-      border:1px solid var(--border);
-      border-radius:16px;
-      overflow:hidden;
-      background:rgba(20,20,22,.6);
-    }
-    .groupHead{
-      padding:10px 12px;
-      display:flex; align-items:center; justify-content:space-between;
-      border-bottom:1px solid var(--border);
-      background:rgba(15,15,16,.7);
-    }
-    .groupName{font-weight:700}
-    .groupCount{color:var(--muted); font-size:12px}
-    .groupBody{padding:10px 10px 0;}
+    .footerRow { display:flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 8px; line-height: 1.35; }
+    .danger { border-color:#4a2430; background: rgba(255,120,150,.06); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
   </style>
 </head>
 <body>
   <header>
-    <div class="titleRow">
-      <h1>My Music List</h1>
-      <button class="btnGhost" id="btnOpenAdd">＋ Add</button>
+    <h1>My Music List</h1>
+
+    <div class="controls">
+      <div class="row">
+        <input id="artistInput" placeholder="Artist (e.g. Radiohead)" autocomplete="off" />
+        <input id="titleInput" placeholder="Song title (e.g. Karma Police)" autocomplete="off" />
+      </div>
+      <div class="row">
+        <input id="moodInput" placeholder="Mood (optional: chill / gym / sad)" autocomplete="off" />
+        <button id="addBtn" class="primary small">Add</button>
+      </div>
+
+      <div class="row">
+        <input id="searchInput" placeholder="Search artist or song…" autocomplete="off" />
+        <select id="filterSelect" class="small">
+          <option value="all">All</option>
+          <option value="fav">Favorites only</option>
+        </select>
+      </div>
+
+      <div class="stats">
+        <div class="pill"><div>Total songs</div><b id="totalSongs">0</b></div>
+        <div class="pill"><div>Total artists</div><b id="totalArtists">0</b></div>
+      </div>
+
+      <div class="footerRow">
+        <button id="exportBtn" class="ghost">Export</button>
+        <label class="ghost" style="display:inline-flex; align-items:center; gap:8px; padding:10px 10px; border-radius:12px; border:1px solid var(--line); cursor:pointer;">
+          Import
+          <input id="importFile" type="file" accept="application/json" style="display:none;">
+        </label>
+        <button id="clearBtn" class="ghost danger">Clear all</button>
+      </div>
+
+      <div class="hint">
+        • Everything is <b>A–Z</b>. • Numbering shows <span class="mono">Artist #</span>, <span class="mono">Song # (global)</span>, and <span class="mono">Song # within artist</span>.<br/>
+        • Tap ⭐ to favorite. • Tap ✏️ to edit. • Tap 🗑️ to delete.
+      </div>
     </div>
-    <div class="stats" id="stats"></div>
   </header>
 
-  <main>
-    <section class="card" id="addCard">
-      <div class="row" style="justify-content:space-between; margin-bottom:8px;">
-        <div style="font-weight:700;">Add / Edit Song</div>
-        <button class="btnGhost" id="btnCloseAdd">Close</button>
-      </div>
-
-      <div class="controls">
-        <div>
-          <label>Artist</label>
-          <input id="inpArtist" placeholder="e.g. Radiohead" autocomplete="off" />
-        </div>
-        <div>
-          <label>Song title</label>
-          <input id="inpTitle" placeholder="e.g. Karma Police" autocomplete="off" />
-        </div>
-        <div class="controls2">
-          <div>
-            <label>Favorite</label>
-            <select id="inpFav">
-              <option value="false">No</option>
-              <option value="true">Yes ⭐</option>
-            </select>
-          </div>
-          <div>
-            <label>Mood (optional)</label>
-            <input id="inpMood" placeholder="e.g. chill / gym / sad" autocomplete="off" />
-          </div>
-        </div>
-        <div>
-          <label>Notes (optional)</label>
-          <textarea id="inpNotes" placeholder="Extra info (optional)"></textarea>
-        </div>
-
-        <div class="row">
-          <button class="btnPrimary" id="btnSave" style="flex:1;">Save</button>
-          <button class="btnDanger hidden" id="btnDelete">Delete</button>
-        </div>
-        <div class="hint">Tip: keep it consistent like <b>Artist</b> and <b>Song title</b>. Sorting is automatic (A–Z).</div>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="controls">
-        <div>
-          <label>Search</label>
-          <input id="inpSearch" placeholder="Search song or artist…" />
-        </div>
-        <div class="controls2">
-          <div>
-            <label>Filter artist</label>
-            <select id="selArtist">
-              <option value="">All artists</option>
-            </select>
-          </div>
-          <div>
-            <label>Favorites</label>
-            <select id="selFav">
-              <option value="all">All</option>
-              <option value="fav">Only favorites ⭐</option>
-              <option value="not">Not favorites</option>
-            </select>
-          </div>
-        </div>
-        <div class="controls2">
-          <div>
-            <label>View</label>
-            <select id="selView">
-              <option value="grouped">Grouped by artist</option>
-              <option value="flat">All songs (flat list)</option>
-            </select>
-          </div>
-          <div>
-            <label>Actions</label>
-            <button id="btnExport">Export JSON</button>
-          </div>
-        </div>
-
-        <details>
-          <summary>Import / Reset</summary>
-          <div class="divider"></div>
-          <div class="controls">
-            <div>
-              <label>Import JSON</label>
-              <input id="fileImport" type="file" accept="application/json" />
-              <div class="hint">Export first so you always have a backup.</div>
-            </div>
-            <button class="btnDanger" id="btnReset">Reset everything</button>
-          </div>
-        </details>
-      </div>
-    </section>
-
-    <div class="listHeader">
-      <h2 id="listTitle">Songs</h2>
-      <div class="small" id="listSub"></div>
-    </div>
-
-    <section id="list"></section>
-  </main>
-
-  <div class="footerBar">
-    <div class="footerRow">
-      <button id="btnAddQuick" class="btnPrimary">Add song</button>
-      <button id="btnScrollTop">Top</button>
-    </div>
+  <div class="wrap">
+    <div id="list" class="list"></div>
   </div>
 
 <script>
-(() => {
-  const LS_KEY = "my_music_list_v1";
+  const KEY = "my_music_list_v1";
+
+  /** @typedef {{id:string, artist:string, title:string, fav:boolean, mood?:string, createdAt:number}} Song */
+
   const $ = (id) => document.getElementById(id);
 
-  const elAddCard = $("addCard");
-  const btnOpenAdd = $("btnOpenAdd");
-  const btnCloseAdd = $("btnCloseAdd");
-  const btnAddQuick = $("btnAddQuick");
-  const btnSave = $("btnSave");
-  const btnDelete = $("btnDelete");
-
-  const inpArtist = $("inpArtist");
-  const inpTitle = $("inpTitle");
-  const inpFav = $("inpFav");
-  const inpMood = $("inpMood");
-  const inpNotes = $("inpNotes");
-
-  const inpSearch = $("inpSearch");
-  const selArtist = $("selArtist");
-  const selFav = $("selFav");
-  const selView = $("selView");
-
-  const btnExport = $("btnExport");
-  const fileImport = $("fileImport");
-  const btnReset = $("btnReset");
-  const btnScrollTop = $("btnScrollTop");
-
-  const elStats = $("stats");
-  const elList = $("list");
-  const elListTitle = $("listTitle");
-  const elListSub = $("listSub");
-
-  let state = {
-    items: [],
-    editingId: null,
-    ui: { addOpen: false }
+  const state = {
+    /** @type {Song[]} */
+    songs: []
   };
 
   function uid() {
-    return Math.random().toString(36).slice(2) + Date.now().toString(36);
+    return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
   }
 
-  function norm(s){ return (s||"").trim(); }
-  function normKey(s){ return norm(s).toLowerCase(); }
-
-  function load() {
-    try{
-      const raw = localStorage.getItem(LS_KEY);
-      if(raw) state = JSON.parse(raw);
-    }catch(e){}
-    if(!state.items) state.items = [];
-    if(!state.ui) state.ui = { addOpen:false };
+  function normalize(s) { return (s || "").trim(); }
+  function sortAZ(a, b) {
+    return a.localeCompare(b, undefined, { sensitivity: "base" });
   }
 
   function save() {
-    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    localStorage.setItem(KEY, JSON.stringify(state.songs));
   }
 
-  function openAdd(editId=null) {
-    state.ui.addOpen = true;
-    state.editingId = editId;
-
-    btnDelete.classList.add("hidden");
-    if(editId){
-      const it = state.items.find(x => x.id === editId);
-      if(it){
-        inpArtist.value = it.artist || "";
-        inpTitle.value = it.title || "";
-        inpFav.value = String(!!it.favorite);
-        inpMood.value = it.mood || "";
-        inpNotes.value = it.notes || "";
-        btnDelete.classList.remove("hidden");
-      }
-    } else {
-      inpArtist.value = "";
-      inpTitle.value = "";
-      inpFav.value = "false";
-      inpMood.value = "";
-      inpNotes.value = "";
-    }
-
-    elAddCard.classList.remove("hidden");
-    // focus for fast entry
-    setTimeout(() => (inpArtist.value ? inpTitle.focus() : inpArtist.focus()), 50);
-    save(); render();
+  function load() {
+    const raw = localStorage.getItem(KEY);
+    state.songs = raw ? JSON.parse(raw) : [];
   }
 
-  function closeAdd() {
-    state.ui.addOpen = false;
-    state.editingId = null;
-    elAddCard.classList.add("hidden");
-    save(); render();
+  function getFilteredSongs() {
+    const q = normalize($("searchInput").value).toLowerCase();
+    const filter = $("filterSelect").value;
+
+    return state.songs
+      .filter(s => {
+        if (filter === "fav" && !s.fav) return false;
+        if (!q) return true;
+        return (s.artist + " " + s.title + " " + (s.mood||"")).toLowerCase().includes(q);
+      })
+      .slice()
+      .sort((x, y) => sortAZ(x.artist, y.artist) || sortAZ(x.title, y.title));
   }
 
-  function upsert() {
-    const artist = norm(inpArtist.value);
-    const title = norm(inpTitle.value);
-    if(!artist || !title){
-      alert("Please fill in Artist and Song title.");
-      return;
-    }
-    const favorite = (inpFav.value === "true");
-    const mood = norm(inpMood.value);
-    const notes = norm(inpNotes.value);
-
-    if(state.editingId){
-      const idx = state.items.findIndex(x => x.id === state.editingId);
-      if(idx >= 0){
-        state.items[idx] = { ...state.items[idx], artist, title, favorite, mood, notes };
-      }
-    } else {
-      state.items.push({ id: uid(), artist, title, favorite, mood, notes, createdAt: Date.now() });
-    }
-    save();
-    closeAdd();
-  }
-
-  function delEditing() {
-    if(!state.editingId) return;
-    if(!confirm("Delete this song?")) return;
-    state.items = state.items.filter(x => x.id !== state.editingId);
-    save();
-    closeAdd();
-  }
-
-  function getComputed() {
-    // base sorted by artist A-Z then title A-Z
-    const sorted = [...state.items].sort((a,b) => {
-      const aa = normKey(a.artist), bb = normKey(b.artist);
-      if(aa < bb) return -1;
-      if(aa > bb) return 1;
-      const at = normKey(a.title), bt = normKey(b.title);
-      if(at < bt) return -1;
-      if(at > bt) return 1;
-      return 0;
-    });
-
-    // unique artists (A-Z)
+  function computeArtistOrder(songsSorted) {
     const artists = [];
-    const artistIndex = new Map(); // artistKey -> number (1..)
-    for(const it of sorted){
-      const k = normKey(it.artist);
-      if(!artistIndex.has(k)){
-        artists.push(it.artist);
-        artistIndex.set(k, artists.length);
-      }
+    const seen = new Set();
+    for (const s of songsSorted) {
+      const a = s.artist;
+      if (!seen.has(a)) { seen.add(a); artists.push(a); }
     }
-
-    // numbering
-    // globalSongNo = order in sorted list (1..)
-    // withinArtistNo = order inside that artist (1..)
-    const withinCount = new Map(); // artistKey -> counter
-    const computed = sorted.map((it, i) => {
-      const ak = normKey(it.artist);
-      const artistNo = artistIndex.get(ak);
-      const c = (withinCount.get(ak) || 0) + 1;
-      withinCount.set(ak, c);
-      return {
-        ...it,
-        artistNo,
-        globalSongNo: i + 1,
-        withinArtistNo: c,
-        artistKey: ak
-      };
-    });
-
-    return { computed, artists, artistIndex };
+    return artists; // already A-Z because songsSorted is A-Z
   }
 
-  function applyFilters(computed) {
-    const q = normKey(inpSearch.value);
-    const artistFilter = selArtist.value; // artistKey
-    const favFilter = selFav.value; // all | fav | not
-
-    return computed.filter(it => {
-      if(q){
-        const hay = (normKey(it.artist) + " " + normKey(it.title) + " " + normKey(it.mood) + " " + normKey(it.notes));
-        if(!hay.includes(q)) return false;
-      }
-      if(artistFilter && it.artistKey !== artistFilter) return false;
-      if(favFilter === "fav" && !it.favorite) return false;
-      if(favFilter === "not" && it.favorite) return false;
-      return true;
-    });
+  function groupByArtist(songsSorted) {
+    /** @type {Record<string, Song[]>} */
+    const groups = {};
+    for (const s of songsSorted) {
+      (groups[s.artist] ||= []).push(s);
+    }
+    // ensure songs within artist sorted A-Z by title
+    for (const a of Object.keys(groups)) {
+      groups[a].sort((x, y) => sortAZ(x.title, y.title));
+    }
+    return groups;
   }
 
-  function renderStats({computed, artists}) {
-    const totalSongs = computed.length;
-    const totalArtists = artists.length;
-    const favs = computed.filter(x => x.favorite).length;
-
-    elStats.innerHTML = "";
-    const pills = [
-      `Songs: <span class="mono">${totalSongs}</span>`,
-      `Artists: <span class="mono">${totalArtists}</span>`,
-      `Favorites: <span class="mono">${favs}</span>`
-    ];
-    for(const p of pills){
-      const d = document.createElement("div");
-      d.className = "pill";
-      d.innerHTML = p;
-      elStats.appendChild(d);
-    }
-  }
-
-  function renderArtistSelect({artists, artistIndex}) {
-    const current = selArtist.value;
-    // rebuild
-    selArtist.innerHTML = `<option value="">All artists</option>`;
-    // Need keys; derive from artistIndex map by re-sorting artists
-    // We'll recompute keys from name.
-    for(const name of artists){
-      const k = normKey(name);
-      const no = artistIndex.get(k);
-      const opt = document.createElement("option");
-      opt.value = k;
-      opt.textContent = `${no}. ${name}`;
-      selArtist.appendChild(opt);
-    }
-    // keep selection if still exists
-    if([...selArtist.options].some(o => o.value === current)){
-      selArtist.value = current;
-    }
-  }
-
-  function songCard(it){
-    const wrap = document.createElement("div");
-    wrap.className = "card songCard";
-
-    const top = document.createElement("div");
-    top.className = "songTop";
-
-    const main = document.createElement("div");
-    main.className = "songMain";
-
-    const title = document.createElement("div");
-    title.className = "songTitle";
-    title.textContent = it.title;
-
-    const meta = document.createElement("div");
-    meta.className = "songMeta";
-    meta.innerHTML = `
-      <span><b>${it.artist}</b></span>
-      <span class="nums">Artist #${it.artistNo}</span>
-      <span class="nums">Song #${it.globalSongNo}</span>
-      <span class="nums">Within artist #${it.withinArtistNo}</span>
-    `;
-
-    main.appendChild(title);
-    main.appendChild(meta);
-
-    const star = document.createElement("button");
-    star.className = "star" + (it.favorite ? " on" : "");
-    star.textContent = it.favorite ? "⭐" : "☆";
-    star.title = "Toggle favorite";
-    star.onclick = () => {
-      const idx = state.items.findIndex(x => x.id === it.id);
-      if(idx >= 0){
-        state.items[idx].favorite = !state.items[idx].favorite;
-        save(); render();
-      }
-    };
-
-    top.appendChild(main);
-    top.appendChild(star);
-
-    const actions = document.createElement("div");
-    actions.className = "songActions";
-
-    const btnEdit = document.createElement("button");
-    btnEdit.textContent = "Edit";
-    btnEdit.onclick = () => openAdd(it.id);
-
-    actions.appendChild(btnEdit);
-
-    if(it.mood || it.notes){
-      const det = document.createElement("details");
-      const sum = document.createElement("summary");
-      sum.textContent = "More info";
-      det.appendChild(sum);
-
-      const box = document.createElement("div");
-      box.style.marginTop = "10px";
-      box.className = "small";
-      box.innerHTML = `
-        ${it.mood ? `<div><b>Mood:</b> ${escapeHtml(it.mood)}</div>` : ""}
-        ${it.notes ? `<div style="margin-top:6px;"><b>Notes:</b> ${escapeHtml(it.notes)}</div>` : ""}
-      `;
-      det.appendChild(box);
-      wrap.appendChild(top);
-      wrap.appendChild(actions);
-      wrap.appendChild(det);
-      return wrap;
-    }
-
-    wrap.appendChild(top);
-    wrap.appendChild(actions);
-    return wrap;
-  }
-
-  function groupedView(items){
-    // group by artistKey
-    const groups = new Map();
-    for(const it of items){
-      if(!groups.has(it.artistKey)) groups.set(it.artistKey, { name: it.artist, artistNo: it.artistNo, songs: [] });
-      groups.get(it.artistKey).songs.push(it);
-    }
-    // groups already in A-Z order because items sorted; preserve insertion
-    const frag = document.createDocumentFragment();
-
-    for(const [,g] of groups){
-      const group = document.createElement("div");
-      group.className = "group";
-
-      const head = document.createElement("div");
-      head.className = "groupHead";
-      head.innerHTML = `
-        <div>
-          <div class="groupName">${g.artistNo}. ${escapeHtml(g.name)}</div>
-          <div class="groupCount">${g.songs.length} song(s)</div>
-        </div>
-        <div class="nums">Artist #${g.artistNo}</div>
-      `;
-
-      const body = document.createElement("div");
-      body.className = "groupBody";
-      for(const s of g.songs){
-        body.appendChild(songCard(s));
-      }
-
-      group.appendChild(head);
-      group.appendChild(body);
-      frag.appendChild(group);
-    }
-    return frag;
-  }
-
-  function flatView(items){
-    const frag = document.createDocumentFragment();
-    for(const it of items){
-      frag.appendChild(songCard(it));
-    }
-    return frag;
+  function setStats(songsSorted) {
+    $("totalSongs").textContent = String(state.songs.length);
+    const artistsSet = new Set(state.songs.map(s => s.artist));
+    $("totalArtists").textContent = String(artistsSet.size);
   }
 
   function render() {
-    // add card open/close state
-    if(state.ui.addOpen) elAddCard.classList.remove("hidden");
-    else elAddCard.classList.add("hidden");
+    const songsSorted = getFilteredSongs();
+    setStats(songsSorted);
 
-    const base = getComputed();
-    renderStats(base);
-    renderArtistSelect(base);
+    const list = $("list");
+    list.innerHTML = "";
 
-    const filtered = applyFilters(base.computed);
+    const artistOrder = computeArtistOrder(songsSorted);
+    const groups = groupByArtist(songsSorted);
 
-    // titles
-    elListTitle.textContent = (selView.value === "grouped") ? "Artists (A–Z)" : "All songs (A–Z)";
-    elListSub.textContent = `${filtered.length} result(s)`;
+    // Global song numbering over ALL artists (based on current sort + filters)
+    // If you want "global numbering of all songs ever", use state.songs sorted A-Z instead.
+    const globalIndex = new Map();
+    songsSorted.forEach((s, i) => globalIndex.set(s.id, i + 1));
 
-    // render list
-    elList.innerHTML = "";
-    if(filtered.length === 0){
+    artistOrder.forEach((artist, ai) => {
+      const artistNo = ai + 1;
+      const songs = groups[artist] || [];
+
+      const details = document.createElement("details");
+      details.open = true;
+
+      const summary = document.createElement("summary");
+      summary.innerHTML = `
+        <div class="artistNo">${artistNo}</div>
+        <div class="artistMeta">
+          <div class="artistName">${escapeHtml(artist)}</div>
+          <div class="artistCount">${songs.length} song${songs.length === 1 ? "" : "s"}</div>
+        </div>
+      `;
+
+      const songsDiv = document.createElement("div");
+      songsDiv.className = "songs";
+
+      songs.forEach((song, si) => {
+        const withinArtistNo = si + 1;
+        const globalNo = globalIndex.get(song.id) || 0;
+
+        const row = document.createElement("div");
+        row.className = "songRow";
+        row.innerHTML = `
+          <div class="songNums">
+            <div><b>#${globalNo}</b> all</div>
+            <div>#${withinArtistNo} artist</div>
+          </div>
+
+          <div style="min-width:0;">
+            <div class="songTitle">${escapeHtml(song.title)}</div>
+            <div class="tags">
+              ${song.fav ? `<span class="tag fav">⭐ favorite</span>` : ``}
+              ${song.mood ? `<span class="tag">${escapeHtml(song.mood)}</span>` : ``}
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="iconBtn" title="Favorite" aria-label="Favorite">${song.fav ? "⭐" : "☆"}</button>
+            <button class="iconBtn" title="Edit" aria-label="Edit">✏️</button>
+            <button class="iconBtn" title="Delete" aria-label="Delete">🗑️</button>
+          </div>
+        `;
+
+        const [favBtn, editBtn, delBtn] = row.querySelectorAll("button");
+
+        favBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          song.fav = !song.fav;
+          save(); render();
+        });
+
+        editBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const newArtist = prompt("Artist:", song.artist);
+          if (newArtist === null) return;
+          const newTitle = prompt("Song title:", song.title);
+          if (newTitle === null) return;
+          const newMood = prompt("Mood (optional):", song.mood || "");
+          song.artist = normalize(newArtist) || song.artist;
+          song.title  = normalize(newTitle)  || song.title;
+          song.mood   = normalize(newMood);
+          save(); render();
+        });
+
+        delBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (!confirm(`Delete: ${song.artist} – ${song.title}?`)) return;
+          state.songs = state.songs.filter(x => x.id !== song.id);
+          save(); render();
+        });
+
+        songsDiv.appendChild(row);
+      });
+
+      details.appendChild(summary);
+      details.appendChild(songsDiv);
+      list.appendChild(details);
+    });
+
+    if (artistOrder.length === 0) {
       const empty = document.createElement("div");
-      empty.className = "card";
-      empty.innerHTML = `<div style="font-weight:700;margin-bottom:6px;">No results</div>
-                         <div class="small">Try clearing filters or add a new song.</div>`;
-      elList.appendChild(empty);
+      empty.className = "pill";
+      empty.textContent = "No results. Add your first song above.";
+      list.appendChild(empty);
+    }
+  }
+
+  function addSong() {
+    const artist = normalize($("artistInput").value);
+    const title = normalize($("titleInput").value);
+    const mood = normalize($("moodInput").value);
+
+    if (!artist || !title) {
+      alert("Please enter both Artist and Song title.");
       return;
     }
 
-    if(selView.value === "grouped"){
-      elList.appendChild(groupedView(filtered));
-    } else {
-      elList.appendChild(flatView(filtered));
-    }
+    state.songs.push({
+      id: uid(),
+      artist,
+      title,
+      fav: false,
+      mood: mood || "",
+      createdAt: Date.now()
+    });
+
+    $("titleInput").value = "";
+    $("moodInput").value = "";
+    $("titleInput").focus();
+
+    save();
+    render();
   }
 
-  function exportJSON() {
-    const data = { items: state.items };
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  function exportData() {
+    const blob = new Blob([JSON.stringify(state.songs, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "my-music-list.json";
+    a.download = "my-music-list-backup.json";
+    document.body.appendChild(a);
     a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
-  function importJSON(file) {
+  function importData(file) {
     const reader = new FileReader();
     reader.onload = () => {
-      try{
-        const parsed = JSON.parse(String(reader.result));
-        if(!parsed || !Array.isArray(parsed.items)) throw new Error("Invalid file");
-        // normalize
-        state.items = parsed.items.map(x => ({
-          id: x.id || uid(),
-          artist: norm(x.artist),
-          title: norm(x.title),
-          favorite: !!x.favorite,
-          mood: norm(x.mood),
-          notes: norm(x.notes),
-          createdAt: x.createdAt || Date.now()
-        })).filter(x => x.artist && x.title);
-        save(); render();
-        alert("Import successful!");
-      }catch(e){
-        alert("Import failed. Make sure it's a valid export JSON file.");
+      try {
+        const data = JSON.parse(String(reader.result));
+        if (!Array.isArray(data)) throw new Error("Not an array");
+        // Light validation
+        const cleaned = data
+          .filter(x => x && typeof x.artist === "string" && typeof x.title === "string")
+          .map(x => ({
+            id: typeof x.id === "string" ? x.id : uid(),
+            artist: normalize(x.artist) || "Unknown",
+            title: normalize(x.title) || "Untitled",
+            fav: !!x.fav,
+            mood: typeof x.mood === "string" ? normalize(x.mood) : "",
+            createdAt: typeof x.createdAt === "number" ? x.createdAt : Date.now()
+          }));
+
+        state.songs = cleaned;
+        save();
+        render();
+        alert("Import complete ✅");
+      } catch (e) {
+        alert("Import failed. Please choose a valid JSON backup file.");
       }
     };
     reader.readAsText(file);
   }
 
-  function resetAll() {
-    if(!confirm("Reset everything? This cannot be undone.")) return;
-    state.items = [];
-    state.editingId = null;
-    state.ui.addOpen = false;
-    save(); render();
+  function clearAll() {
+    if (!confirm("This will delete EVERYTHING on this device. Continue?")) return;
+    state.songs = [];
+    save();
+    render();
   }
 
-  function escapeHtml(str){
+  function escapeHtml(str) {
     return String(str)
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
-  // Wire up events
-  btnOpenAdd.onclick = () => openAdd(null);
-  btnAddQuick.onclick = () => openAdd(null);
-  btnCloseAdd.onclick = () => closeAdd();
-  btnSave.onclick = () => upsert();
-  btnDelete.onclick = () => delEditing();
+  // Wire up UI
+  $("addBtn").addEventListener("click", addSong);
+  $("titleInput").addEventListener("keydown", (e) => { if (e.key === "Enter") addSong(); });
+  $("artistInput").addEventListener("keydown", (e) => { if (e.key === "Enter") $("titleInput").focus(); });
 
-  inpSearch.oninput = () => render();
-  selArtist.onchange = () => render();
-  selFav.onchange = () => render();
-  selView.onchange = () => render();
+  $("searchInput").addEventListener("input", render);
+  $("filterSelect").addEventListener("change", render);
 
-  btnExport.onclick = exportJSON;
-  fileImport.onchange = (e) => {
-    const f = e.target.files && e.target.files[0];
-    if(f) importJSON(f);
-    fileImport.value = "";
-  };
-  btnReset.onclick = resetAll;
+  $("exportBtn").addEventListener("click", exportData);
+  $("importFile").addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) importData(file);
+    e.target.value = ""; // reset
+  });
 
-  btnScrollTop.onclick = () => window.scrollTo({top:0, behavior:"smooth"});
+  $("clearBtn").addEventListener("click", clearAll);
 
-  // init
+  // Start
   load();
-  // open add panel only if requested
-  if(!state.ui.addOpen) elAddCard.classList.add("hidden");
   render();
-})();
 </script>
 </body>
 </html>
