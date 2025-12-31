@@ -3,1104 +3,1135 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>All Songs</title>
-
+  <title>Song Library</title>
   <style>
     :root{
-      --bg:#0b0f1a;
-      --card:rgba(255,255,255,.06);
-      --card2:rgba(255,255,255,.08);
-      --stroke:rgba(255,255,255,.10);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.65);
-      --muted2:rgba(255,255,255,.45);
-      --chip:rgba(255,255,255,.10);
-      --chipStroke:rgba(255,255,255,.12);
-      --accent:#7aa2ff;
-      --fav:#2fdc9a;
-      --xfav:#f0c36a;
-
-      --r:22px;
-      --shadow: 0 12px 40px rgba(0,0,0,.35);
+      --bg0:#0b0f1a;
+      --bg1:#10162a;
+      --card:rgba(20, 26, 44, 0.72);
+      --card2:rgba(25, 33, 54, 0.65);
+      --stroke:rgba(255,255,255,0.08);
+      --text:rgba(255,255,255,0.92);
+      --muted:rgba(255,255,255,0.65);
+      --muted2:rgba(255,255,255,0.45);
+      --chip:rgba(255,255,255,0.08);
+      --chip2:rgba(255,255,255,0.11);
+      --shadow: 0 18px 40px rgba(0,0,0,0.45);
+      --r:18px;
+      --r2:14px;
     }
-
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: radial-gradient(900px 600px at 25% 10%, rgba(122,162,255,.18), transparent 60%),
-                  radial-gradient(900px 600px at 80% 30%, rgba(157,122,255,.14), transparent 60%),
-                  var(--bg);
       color:var(--text);
+      background: radial-gradient(1200px 700px at 20% 0%, rgba(102, 78, 255, .22), transparent 60%),
+                  radial-gradient(900px 600px at 80% 10%, rgba(90, 200, 250, .12), transparent 55%),
+                  linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
     }
-
     .wrap{
-      max-width: 720px;
+      max-width: 860px;
       margin: 0 auto;
-      padding: 18px 14px 110px;
+      padding: 18px 14px 120px;
     }
-
-    header{
+    .header{
       display:flex;
-      gap:12px;
       align-items:center;
-      margin: 6px 0 14px;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 14px;
     }
-    .icon{
-      width:48px;height:48px;border-radius:16px;
+    .title{
+      display:flex; gap:10px; align-items:center;
+    }
+    .title .icon{
+      width:40px;height:40px;border-radius:14px;
       display:grid;place-items:center;
-      background: linear-gradient(160deg, rgba(122,162,255,.22), rgba(255,255,255,.06));
+      background: rgba(255,255,255,0.06);
       border:1px solid var(--stroke);
       box-shadow: var(--shadow);
       flex:0 0 auto;
     }
-    h1{margin:0;font-size:30px;letter-spacing:.2px}
-
+    h1{font-size:20px;margin:0}
+    .subtitle{font-size:12px;color:var(--muted); margin-top:2px}
+    .pillrow{
+      display:flex; gap:8px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
     .card{
       background: var(--card);
-      border:1px solid var(--stroke);
+      border: 1px solid var(--stroke);
       border-radius: var(--r);
       box-shadow: var(--shadow);
       padding: 14px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
-
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .row-between{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-    .spacer{height:12px}
-
-    .btn{
-      appearance:none;border:1px solid var(--stroke);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 10px 12px;
-      font-weight: 600;
-      cursor:pointer;
-    }
-    .btn.primary{
-      background: linear-gradient(180deg, rgba(122,162,255,.26), rgba(255,255,255,.06));
-      border-color: rgba(122,162,255,.30);
-    }
-    .btn.danger{
-      border-color: rgba(255,120,120,.35);
-      background: rgba(255,120,120,.10);
-    }
-    .btn.ghost{
-      background: transparent;
-    }
-
-    input, select, textarea{
-      width:100%;
-      border-radius: 14px;
+    .stack{display:flex; flex-direction:column; gap:12px;}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap;}
+    button{
+      appearance:none;
       border:1px solid var(--stroke);
-      background: rgba(0,0,0,.20);
+      background: rgba(255,255,255,0.06);
       color: var(--text);
-      padding: 11px 12px;
-      outline:none;
-      font-size: 14px;
+      padding: 11px 14px;
+      border-radius: 14px;
+      font-weight:600;
+      font-size:14px;
+      cursor:pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.20);
     }
-    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+    button:active{transform: translateY(1px)}
+    button.primary{
+      background: linear-gradient(180deg, rgba(124, 110, 255, .35), rgba(124, 110, 255, .18));
+      border-color: rgba(160, 150, 255, .30);
     }
-    @media (max-width: 520px){
-      .grid{grid-template-columns: 1fr;}
+    button.ghost{
+      background: rgba(255,255,255,0.04);
     }
-
+    .smallnote{color:var(--muted2);font-size:12px;line-height:1.35}
     details{
       border-radius: var(--r);
       overflow:hidden;
-      background: var(--card);
-      border: 1px solid var(--stroke);
-      box-shadow: var(--shadow);
     }
-    summary{
+    details > summary{
       list-style:none;
       cursor:pointer;
-      padding: 12px 14px;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      font-weight: 700;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 14px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--r);
     }
-    summary::-webkit-details-marker{display:none}
-    .details-body{padding: 0 14px 14px}
-    .hint{color:var(--muted2);font-size:12px;margin-top:8px;line-height:1.35}
+    details[open] > summary{
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    details > summary::-webkit-details-marker{display:none}
+    .summaryTitle{
+      display:flex; align-items:center; gap:10px;
+      font-weight:800;
+    }
+    .summaryRight{color:var(--muted);font-size:12px}
+    .detailsBody{
+      padding: 14px;
+      border:1px solid var(--stroke);
+      border-top:none;
+      border-bottom-left-radius: var(--r);
+      border-bottom-right-radius: var(--r);
+      background: rgba(255,255,255,0.03);
+    }
 
-    .badges{
-      display:flex;gap:8px;flex-wrap:wrap;align-items:center;
-      color:var(--muted);
-      font-size:12px;
+    /* form */
+    .formgrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    label{font-size:12px;color:var(--muted);display:block;margin:0 0 6px 2px}
+    input, select{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      outline:none;
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      font-size: 15px;
+    }
+    select{
+      background: rgba(0,0,0,0.22);
+    }
+    input::placeholder{color: rgba(255,255,255,0.35)}
+    .row2{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
+    .row3{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;}
+    .inlineAdd{
+      display:flex; gap:10px; align-items:center;
+    }
+    .inlineAdd input{flex:1}
+    .inlineAdd button{padding: 10px 12px; border-radius: 12px; font-size: 13px;}
+    .seg{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top: 6px;
+    }
+    .toggle{
+      display:flex; align-items:center; gap:10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+    }
+    .toggle input{width:18px;height:18px;margin:0}
+    .toggle span{font-weight:700}
+    .toggle small{display:block;color:var(--muted);font-weight:600}
+
+    /* list */
+    .listHeader{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; flex-wrap:wrap;
+      margin-bottom: 8px;
+    }
+    .search{
+      flex:1;
+      min-width: 180px;
+      max-width: 420px;
+    }
+    .metaLine{
+      display:flex; gap:8px; flex-wrap:wrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .artistCard{
+      background: var(--card2);
+      border: 1px solid var(--stroke);
+      border-radius: var(--r);
+      padding: 12px;
+    }
+    .artistTop{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom: 8px;
+    }
+    .artistLeft{
+      display:flex; align-items:center; gap:10px; min-width:0;
     }
     .badge{
-      padding:7px 10px;border-radius:999px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.06);
-      white-space:nowrap;
-    }
-
-    /* Artist block */
-    .artist{
-      padding: 12px 12px;
-      border-radius: 18px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.05);
-      margin-top: 12px;
-    }
-    .artist-head{
-      display:flex;gap:10px;align-items:flex-start;justify-content:space-between;
-    }
-    .artist-left{
-      display:flex;gap:10px;align-items:flex-start;min-width:0;
-    }
-    .num-pill{
-      flex:0 0 auto;
       padding: 6px 10px;
       border-radius: 999px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.06);
-      font-weight:800;
-      font-size:12px;
-      color: rgba(255,255,255,.85);
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-weight: 900;
+      font-size: 12px;
+      flex: 0 0 auto;
     }
-    .artist-name{
-      font-size: 22px;
-      font-weight: 850;
-      line-height: 1.15;
-      margin:0;
-      word-break: break-word;
-    }
-    .artist-sub{
-      margin-top:4px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .artist-tools{
-      display:flex;gap:8px;align-items:center;
-    }
-
-    /* Song card (compact) */
-    .song{
-      margin-top:10px;
-      padding: 10px 10px;
-      border-radius: 18px;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.16);
-    }
-    .song-top{
-      display:flex;gap:10px;align-items:flex-start;justify-content:space-between;
-    }
-    .song-left{
-      display:flex;gap:10px;align-items:flex-start;min-width:0;
-    }
-    .song-title{
+    .artistName{
+      font-weight: 900;
       font-size: 18px;
-      font-weight: 800;
-      margin:0;
-      line-height:1.2;
-      word-break: break-word; /* wrap long titles */
+      line-height: 1.15;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
-    .song-meta{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:4px;
-    }
-    .song-actions{display:flex;gap:8px;flex:0 0 auto}
-    .iconbtn{
-      width:42px;height:42px;border-radius:14px;
-      display:grid;place-items:center;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.06);
-      cursor:pointer;
-    }
+    .artistSub{color:var(--muted); font-size:12px; margin-top:2px}
+    .artistRight{color:var(--muted);font-size:12px; white-space:nowrap}
 
-    /* Chips row — now side-by-side */
-    .chips{
+    .songRow{
       display:flex;
-      gap:8px;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.18);
+      margin-top: 10px;
+    }
+    .songMain{
+      min-width: 0;
+      flex:1;
+    }
+    .songTitleLine{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
       flex-wrap:wrap;
-      margin-top:10px;
+    }
+    .songNo{
+      font-weight:900;
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      flex: 0 0 auto;
+    }
+    .songTitle{
+      font-weight:900;
+      font-size: 16px;
+      line-height: 1.2;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      min-width: 0;
+      flex: 1;
+    }
+    .chips{
+      display:flex; gap:8px; flex-wrap:wrap; margin-top: 10px;
     }
     .chip{
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid var(--chipStroke);
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
       background: var(--chip);
-      color: rgba(255,255,255,.85);
-      font-size: 12px;
-      font-weight: 650;
-      white-space:nowrap;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.82);
+      font-weight: 700;
     }
-    .chip.fav{border-color: rgba(47,220,154,.30); background: rgba(47,220,154,.12); color: rgba(225,255,245,.95)}
-    .chip.xfav{border-color: rgba(240,195,106,.32); background: rgba(240,195,106,.12); color: rgba(255,245,220,.95)}
-
-    /* Chart */
-    .chartwrap{
-      height: 170px;
-      border-radius: 18px;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.18);
-      padding: 10px;
+    .chip.fav{
+      background: rgba(80, 200, 120, 0.14);
+      border-color: rgba(80, 200, 120, 0.20);
     }
-    canvas{width:100%;height:100%}
-
-    /* Autocomplete dropdown */
-    .acbox{position:relative}
-    .aclist{
-      position:absolute;left:0;right:0;top: calc(100% + 6px);
-      background: rgba(15,20,35,.98);
-      border:1px solid var(--stroke);
-      border-radius: 16px;
-      overflow:hidden;
-      z-index: 10;
-      box-shadow: var(--shadow);
-      max-height: 220px;
-      overflow-y:auto;
-      display:none;
+    .chip.xfav{
+      background: rgba(255, 200, 90, 0.16);
+      border-color: rgba(255, 200, 90, 0.22);
     }
-    .acitem{
-      padding: 10px 12px;
-      font-size: 14px;
-      border-top: 1px solid rgba(255,255,255,.06);
+    .actions{
+      display:flex; gap:8px; flex:0 0 auto;
+    }
+    .iconbtn{
+      width: 44px; height: 44px;
+      display:grid; place-items:center;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.05);
       cursor:pointer;
-      color: rgba(255,255,255,.88);
     }
-    .acitem:first-child{border-top:none}
-    .acitem:hover{background: rgba(122,162,255,.12)}
-    .acsub{color:var(--muted2);font-size:12px;margin-top:2px}
+    .iconbtn:active{transform: translateY(1px)}
+    .muted{color:var(--muted)}
+    canvas{width:100%; height:200px; display:block;}
+    .chartBox{padding-top:10px}
+    .chartHelp{font-size:12px;color:var(--muted);margin-top:8px}
 
-    .footer-note{
-      margin-top: 12px;
-      color: var(--muted2);
-      font-size: 12px;
-      line-height:1.35;
+    @media (min-width: 740px){
+      .formgrid{grid-template-columns: 1fr 1fr;}
+      .span2{grid-column: 1 / -1;}
+      .row2{grid-template-columns: 1fr 1fr;}
+      .row3{grid-template-columns: 1fr 1fr 1fr;}
     }
-
-    /* Make long labels wrap without squishing */
-    .nowrap{white-space:nowrap}
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <header>
-      <div class="icon" aria-hidden="true">🎵</div>
-      <div>
-        <h1>All Songs</h1>
-        <div class="badges" id="summaryBadges"></div>
+    <div class="header">
+      <div class="title">
+        <div class="icon">🎵</div>
+        <div>
+          <h1>All Songs</h1>
+          <div class="subtitle">Vertical-only browsing • Artist A–Z → Song A–Z • Local save + Export/Import</div>
+        </div>
       </div>
-    </header>
-
-    <!-- Filters (collapsed by default) -->
-    <details id="filtersPanel" open="false">
-      <summary>
-        <span>🔎 Filters</span>
-        <span style="color:var(--muted);font-weight:700;font-size:12px" id="filtersState">Collapsed</span>
-      </summary>
-      <div class="details-body">
-        <div class="grid">
-          <div>
-            <label>Search (song or artist)</label>
-            <input id="q" placeholder="Type to search…" />
-          </div>
-
-          <div>
-            <label>Favorite</label>
-            <select id="favFilter">
-              <option value="all">All</option>
-              <option value="fav">Fav</option>
-              <option value="xfav">X-Fav</option>
-              <option value="any">Fav or X-Fav</option>
-              <option value="none">None</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Genre</label>
-            <select id="genreFilter"></select>
-          </div>
-
-          <div>
-            <label>Mood</label>
-            <select id="moodFilter"></select>
-          </div>
-
-          <div>
-            <label>Country</label>
-            <select id="countryFilter"></select>
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:10px">
-          <button class="btn primary" id="applyFilters">Apply</button>
-          <button class="btn" id="resetFilters">Reset</button>
-        </div>
-
-        <div class="hint">Tip: Filters & charts start collapsed to stay compact for big libraries (5000+ songs).</div>
-      </div>
-    </details>
-
-    <div class="spacer"></div>
-
-    <!-- Charts (genre only, collapsed by default) -->
-    <details id="chartsPanel" open="false">
-      <summary>
-        <span>📊 Charts (compact)</span>
-        <span style="color:var(--muted);font-weight:700;font-size:12px" id="chartsState">Collapsed</span>
-      </summary>
-      <div class="details-body">
-        <div class="chartwrap">
-          <canvas id="genreChart"></canvas>
-        </div>
-        <div class="hint">Genre chart only (Mood removed).</div>
-      </div>
-    </details>
-
-    <div class="spacer"></div>
-
-    <!-- Add song -->
-    <div class="card">
-      <div class="row-between">
-        <div class="badges">
-          <span class="badge" id="sortLabel">Sort: Artist A–Z → Song A–Z</span>
-        </div>
-        <button class="btn primary" id="toggleAdd">＋ Add new song</button>
-      </div>
-
-      <div id="addForm" style="display:none; margin-top:12px;">
-        <div class="grid">
-          <div class="acbox">
-            <label>Artist</label>
-            <input id="artistIn" placeholder="e.g. The Weeknd" autocomplete="off" />
-            <div class="aclist" id="artistAC"></div>
-          </div>
-
-          <div class="acbox">
-            <label>Song Title</label>
-            <input id="titleIn" placeholder="e.g. Blinding Lights" autocomplete="off" />
-            <div class="aclist" id="titleAC"></div>
-          </div>
-
-          <div>
-            <label>Genre</label>
-            <select id="genreIn"></select>
-            <div class="row" style="margin-top:8px">
-              <input id="newGenre" placeholder="Add new genre…" />
-              <button class="btn" id="addGenreBtn">Add</button>
-            </div>
-          </div>
-
-          <div>
-            <label>Mood</label>
-            <select id="moodIn"></select>
-            <div class="row" style="margin-top:8px">
-              <input id="newMood" placeholder="Add new mood…" />
-              <button class="btn" id="addMoodBtn">Add</button>
-            </div>
-          </div>
-
-          <div>
-            <label>Country</label>
-            <select id="countryIn"></select>
-            <div class="row" style="margin-top:8px">
-              <input id="newCountry" placeholder="Add new country…" />
-              <button class="btn" id="addCountryBtn">Add</button>
-            </div>
-          </div>
-
-          <div>
-            <label>Favorite</label>
-            <select id="favIn">
-              <option value="none">None</option>
-              <option value="fav">Fav</option>
-              <option value="xfav">X-Fav (extra favorite)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:10px">
-          <button class="btn primary" id="saveSong">Save</button>
-          <button class="btn" id="clearForm">Clear</button>
-        </div>
-
-        <div class="footer-note">
-          Data saves automatically on this device (localStorage). Use Export/Import to move data to another device.
-        </div>
-
-        <div class="row" style="margin-top:10px">
-          <button class="btn" id="exportBtn">Export (.json)</button>
-          <label class="btn" for="importFile" style="cursor:pointer">Import (.json)</label>
-          <input id="importFile" type="file" accept="application/json" style="display:none" />
-        </div>
+      <div class="pillrow">
+        <div class="pill" id="pillSongs">Songs: 0</div>
+        <div class="pill" id="pillArtists">Artists: 0</div>
       </div>
     </div>
 
-    <div id="list"></div>
+    <div class="stack">
+      <!-- Controls -->
+      <div class="card">
+        <div class="btnrow">
+          <button class="primary" id="btnShowForm">Add new song</button>
+          <button class="ghost" id="btnExport">Export (.json)</button>
+          <button class="ghost" id="btnImport">Import (.json)</button>
+          <input type="file" id="importFile" accept="application/json" style="display:none" />
+        </div>
+        <div style="height:10px"></div>
+        <div class="smallnote">
+          Data saves automatically on this device (localStorage). Use Export/Import to move data to another device (GitHub hosts the page, but your data stays local unless you export/import).
+        </div>
+      </div>
 
-  </div>
+      <!-- Add form (hidden by default) -->
+      <div class="card" id="formCard" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
+          <div style="font-weight:900;">Add / Edit Song</div>
+          <button class="ghost" id="btnCloseForm" type="button">Close</button>
+        </div>
 
-  <script>
-    /***********************
-     * Storage + Defaults
-     ***********************/
-    const LS_KEY = "allSongs.v3";
+        <form id="songForm">
+          <div class="formgrid">
+            <div class="span2">
+              <label>Song title</label>
+              <input id="songTitle" placeholder="e.g. Blinding Lights" list="songTitleList" required />
+              <datalist id="songTitleList"></datalist>
+            </div>
 
-    const defaultGenres = ["Pop","Rock","Hip Hop","R&B","Jazz","Classical","EDM","Indie","K-pop","Country","Hard Rock","Gospel","Metal Rock","French"];
-    const defaultMoods  = ["Happy","Sad","Energized","Instrumental","Calm"];
-    const defaultCountries = ["USA","UK","Canada","Netherlands","France","Korea","Japan"];
+            <div class="span2">
+              <label>Artist</label>
+              <input id="artistName" placeholder="e.g. The Weeknd" list="artistList" required />
+              <datalist id="artistList"></datalist>
+            </div>
 
-    const state = {
-      songs: [],
-      genres: [],
-      moods: [],
-      countries: [],
-      filters: { q:"", fav:"all", genre:"all", mood:"all", country:"all" }
-    };
-
-    function load(){
-      const raw = localStorage.getItem(LS_KEY);
-      if(raw){
-        try{
-          const data = JSON.parse(raw);
-          state.songs = Array.isArray(data.songs) ? data.songs : [];
-          state.genres = Array.isArray(data.genres) && data.genres.length ? data.genres : [...defaultGenres];
-          state.moods = Array.isArray(data.moods) && data.moods.length ? data.moods : [...defaultMoods];
-          state.countries = Array.isArray(data.countries) && data.countries.length ? data.countries : [...defaultCountries];
-          state.filters = data.filters || state.filters;
-          return;
-        }catch(e){}
-      }
-      // First run
-      state.songs = [
-        {id: uid(), artist:"The Weeknd", title:"Blinding Lights", genre:"Pop", mood:"Energized", country:"Canada", fav:"xfav"}
-      ];
-      state.genres = [...defaultGenres];
-      state.moods = [...defaultMoods];
-      state.countries = [...defaultCountries];
-      save();
-    }
-
-    function save(){
-      localStorage.setItem(LS_KEY, JSON.stringify({
-        songs: state.songs,
-        genres: state.genres,
-        moods: state.moods,
-        countries: state.countries,
-        filters: state.filters
-      }));
-    }
-
-    function uid(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
-
-    /***********************
-     * Sorting + numbering
-     ***********************/
-    const collator = new Intl.Collator(undefined, { sensitivity:"base", numeric:true });
-
-    function normalize(s){ return (s || "").trim(); }
-
-    function sortSongs(arr){
-      return [...arr].sort((a,b)=>{
-        const aa = normalize(a.artist), ba = normalize(b.artist);
-        const at = normalize(a.title), bt = normalize(b.title);
-        const c1 = collator.compare(aa, ba);
-        if(c1 !== 0) return c1;
-        return collator.compare(at, bt);
-      });
-    }
-
-    // Artist numbering (A1, A2...) based on unique artists in current filtered set or whole set?
-    // We'll base it on the CURRENT VIEW (after filters) so it matches what you see.
-    function pad(n, width){
-      const s = String(n);
-      return s.length >= width ? s : "0".repeat(width - s.length) + s;
-    }
-
-    /***********************
-     * UI refs
-     ***********************/
-    const el = (id)=>document.getElementById(id);
-
-    const summaryBadges = el("summaryBadges");
-    const listEl = el("list");
-
-    const filtersPanel = el("filtersPanel");
-    const chartsPanel  = el("chartsPanel");
-    const filtersState = el("filtersState");
-    const chartsState  = el("chartsState");
-
-    const q = el("q");
-    const favFilter = el("favFilter");
-    const genreFilter = el("genreFilter");
-    const moodFilter = el("moodFilter");
-    const countryFilter = el("countryFilter");
-
-    const applyFilters = el("applyFilters");
-    const resetFilters = el("resetFilters");
-
-    const toggleAdd = el("toggleAdd");
-    const addForm = el("addForm");
-
-    const artistIn = el("artistIn");
-    const titleIn  = el("titleIn");
-    const genreIn  = el("genreIn");
-    const moodIn   = el("moodIn");
-    const countryIn = el("countryIn");
-    const favIn    = el("favIn");
-
-    const newGenre = el("newGenre");
-    const newMood = el("newMood");
-    const newCountry = el("newCountry");
-
-    const addGenreBtn = el("addGenreBtn");
-    const addMoodBtn = el("addMoodBtn");
-    const addCountryBtn = el("addCountryBtn");
-
-    const saveSongBtn = el("saveSong");
-    const clearFormBtn = el("clearForm");
-
-    const exportBtn = el("exportBtn");
-    const importFile = el("importFile");
-
-    // Autocomplete
-    const artistAC = el("artistAC");
-    const titleAC  = el("titleAC");
-
-    /***********************
-     * Dropdown helpers
-     ***********************/
-    function fillSelect(sel, items, includeAll=false){
-      sel.innerHTML = "";
-      if(includeAll){
-        const opt = document.createElement("option");
-        opt.value="all"; opt.textContent="All";
-        sel.appendChild(opt);
-      }
-      for(const it of items){
-        const opt = document.createElement("option");
-        opt.value=it; opt.textContent=it;
-        sel.appendChild(opt);
-      }
-    }
-
-    function ensureInList(list, value){
-      value = normalize(value);
-      if(!value) return false;
-      if(list.some(x => x.toLowerCase() === value.toLowerCase())) return false;
-      list.push(value);
-      list.sort((a,b)=>collator.compare(a,b));
-      return true;
-    }
-
-    /***********************
-     * Filters
-     ***********************/
-    function matchesFilters(s){
-      const qq = state.filters.q.trim().toLowerCase();
-      if(qq){
-        const hay = (s.artist + " " + s.title).toLowerCase();
-        if(!hay.includes(qq)) return false;
-      }
-      const f = state.filters.fav;
-      if(f === "fav" && s.fav !== "fav") return false;
-      if(f === "xfav" && s.fav !== "xfav") return false;
-      if(f === "any" && !(s.fav === "fav" || s.fav === "xfav")) return false;
-      if(f === "none" && s.fav !== "none") return false;
-
-      if(state.filters.genre !== "all" && s.genre !== state.filters.genre) return false;
-      if(state.filters.mood !== "all" && s.mood !== state.filters.mood) return false;
-      if(state.filters.country !== "all" && s.country !== state.filters.country) return false;
-      return true;
-    }
-
-    /***********************
-     * Render list (compact)
-     ***********************/
-    function render(){
-      // sync filter inputs from state
-      q.value = state.filters.q || "";
-      favFilter.value = state.filters.fav || "all";
-
-      fillSelect(genreFilter, ["All", ...state.genres], false);
-      genreFilter.value = state.filters.genre || "all";
-      genreFilter.options[0].value = "all";
-      genreFilter.options[0].textContent = "All";
-
-      fillSelect(moodFilter, ["All", ...state.moods], false);
-      moodFilter.value = state.filters.mood || "all";
-      moodFilter.options[0].value = "all";
-      moodFilter.options[0].textContent = "All";
-
-      fillSelect(countryFilter, ["All", ...state.countries], false);
-      countryFilter.value = state.filters.country || "all";
-      countryFilter.options[0].value = "all";
-      countryFilter.options[0].textContent = "All";
-
-      fillSelect(genreIn, state.genres, false);
-      fillSelect(moodIn, state.moods, false);
-      fillSelect(countryIn, state.countries, false);
-
-      // collapse labels
-      filtersState.textContent = filtersPanel.open ? "Expanded" : "Collapsed";
-      chartsState.textContent  = chartsPanel.open ? "Expanded" : "Collapsed";
-
-      // apply filters
-      const filtered = sortSongs(state.songs.filter(matchesFilters));
-
-      // Summary badges (compact)
-      const totalSongs = filtered.length;
-      const artistSet = new Set(filtered.map(s => normalize(s.artist).toLowerCase()).filter(Boolean));
-      const totalArtists = artistSet.size;
-
-      summaryBadges.innerHTML = `
-        <span class="badge">Songs: <b>${totalSongs}</b></span>
-        <span class="badge">Artists: <b>${totalArtists}</b></span>
-      `;
-
-      // Build artist groups in current view, with artist numbering based on alphabetical artists in view
-      const artists = Array.from(new Set(filtered.map(s => normalize(s.artist)).filter(Boolean)))
-        .sort((a,b)=>collator.compare(a,b));
-
-      const artistIndexMap = new Map();
-      artists.forEach((a,i)=>artistIndexMap.set(a, i+1));
-
-      // Song numbering is global in current view order (S00001..)
-      // This gives you “how many songs in this view” and the song position.
-      listEl.innerHTML = "";
-
-      let songCounter = 0;
-
-      for(const artist of artists){
-        const groupSongs = filtered.filter(s => normalize(s.artist) === artist);
-
-        const artistCard = document.createElement("div");
-        artistCard.className = "artist";
-
-        const artistNo = artistIndexMap.get(artist);
-        const aTag = `#A${artistNo}`;
-
-        artistCard.innerHTML = `
-          <div class="artist-head">
-            <div class="artist-left">
-              <div class="num-pill">${aTag}</div>
-              <div style="min-width:0">
-                <p class="artist-name">${escapeHtml(artist)}</p>
-                <div class="artist-sub">${groupSongs.length} song(s)</div>
+            <div>
+              <label>Genre</label>
+              <select id="genreSelect"></select>
+              <div class="inlineAdd" style="margin-top:8px;">
+                <input id="genreNew" placeholder="Add new genre…" />
+                <button type="button" id="btnAddGenre">Add</button>
               </div>
+            </div>
+
+            <div>
+              <label>Mood</label>
+              <select id="moodSelect"></select>
+              <div class="inlineAdd" style="margin-top:8px;">
+                <input id="moodNew" placeholder="Add new mood…" />
+                <button type="button" id="btnAddMood">Add</button>
+              </div>
+            </div>
+
+            <div>
+              <label>Country</label>
+              <select id="countrySelect"></select>
+              <div class="inlineAdd" style="margin-top:8px;">
+                <input id="countryNew" placeholder="Add new country…" />
+                <button type="button" id="btnAddCountry">Add</button>
+              </div>
+            </div>
+
+            <div>
+              <label>Favorite</label>
+              <select id="favSelect">
+                <option value="none">None</option>
+                <option value="fav">★ Fav</option>
+                <option value="xfav">★★ X-Fav</option>
+              </select>
+            </div>
+
+            <div class="span2 btnrow" style="margin-top:4px;">
+              <button class="primary" type="submit" id="btnSave">Save</button>
+              <button class="ghost" type="button" id="btnClearForm">Clear</button>
             </div>
           </div>
-        `;
+          <input type="hidden" id="editingId" value="" />
+        </form>
+      </div>
 
-        // songs
-        for(const s of groupSongs){
-          songCounter++;
-          const sTag = `#S${pad(songCounter, 5)}`; // simple, clean numbering
-
-          const songEl = document.createElement("div");
-          songEl.className = "song";
-
-          const favChip = s.fav === "fav" ? `<span class="chip fav">★ Fav</span>` :
-                          s.fav === "xfav" ? `<span class="chip xfav">★★ X-Fav</span>` : ``;
-
-          songEl.innerHTML = `
-            <div class="song-top">
-              <div class="song-left">
-                <div class="num-pill">${sTag}</div>
-                <div style="min-width:0">
-                  <p class="song-title">${escapeHtml(s.title || "(Untitled)")}</p>
-                </div>
-              </div>
-              <div class="song-actions">
-                <button class="iconbtn" title="Edit" aria-label="Edit">✏️</button>
-                <button class="iconbtn" title="Delete" aria-label="Delete">🗑️</button>
-              </div>
+      <!-- Filters (collapsed by default) -->
+      <details class="filterBox">
+        <summary>
+          <div class="summaryTitle">🧰 Filters</div>
+          <div class="summaryRight">Collapsed</div>
+        </summary>
+        <div class="detailsBody">
+          <div class="formgrid">
+            <div class="span2">
+              <label>Search (artist or song)</label>
+              <input id="searchInput" class="search" placeholder="Type to search…" />
             </div>
 
-            <div class="chips" aria-label="Tags">
-              ${s.genre ? `<span class="chip">${escapeHtml(s.genre)}</span>` : ``}
-              ${s.mood ? `<span class="chip">${escapeHtml(s.mood)}</span>` : ``}
-              ${s.country ? `<span class="chip">${escapeHtml(s.country)}</span>` : ``}
-              ${favChip}
+            <div>
+              <label>Genre</label>
+              <select id="filterGenre"></select>
             </div>
-          `;
 
-          const [editBtn, delBtn] = songEl.querySelectorAll(".iconbtn");
-          editBtn.onclick = ()=> editSong(s.id);
-          delBtn.onclick  = ()=> deleteSong(s.id);
+            <div>
+              <label>Mood</label>
+              <select id="filterMood"></select>
+            </div>
 
-          artistCard.appendChild(songEl);
-        }
+            <div>
+              <label>Country</label>
+              <select id="filterCountry"></select>
+            </div>
 
-        listEl.appendChild(artistCard);
-      }
+            <div>
+              <label>Favorite</label>
+              <select id="filterFav">
+                <option value="all">All</option>
+                <option value="fav">★ Fav</option>
+                <option value="xfav">★★ X-Fav</option>
+                <option value="none">None</option>
+              </select>
+            </div>
 
-      // Charts update (only genre)
-      renderGenreChart(filtered);
+            <div class="span2 btnrow" style="margin-top:4px;">
+              <button class="primary" type="button" id="btnApplyFilters">Apply</button>
+              <button class="ghost" type="button" id="btnResetFilters">Reset</button>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Charts (collapsed by default) -->
+      <details class="chartCard">
+        <summary>
+          <div class="summaryTitle">📊 Genre chart</div>
+          <div class="summaryRight">Collapsed</div>
+        </summary>
+        <div class="detailsBody">
+          <div class="chartBox">
+            <canvas id="genreChart" width="800" height="220"></canvas>
+            <div class="chartHelp">Shows your genre distribution (based on current filtered view).</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- List -->
+      <div class="card">
+        <div class="listHeader">
+          <div class="metaLine" id="sortLine">Sort: Artist A–Z → Song A–Z</div>
+          <div class="metaLine" id="shownLine">0 shown</div>
+        </div>
+        <div id="list"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/** ---------------------------
+ * Storage
+ * -------------------------- */
+const STORAGE_KEY = "song_library_v3";
+
+function loadState(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+/** ---------------------------
+ * Defaults
+ * -------------------------- */
+const DEFAULT_GENRES = [
+  "Pop","Hip-Hop","R&B","Rock","Hard Rock","Metal Rock","Jazz","Classical","Electronic",
+  "K-pop","Country","Gospel","French","Instrumental","Indie","Other"
+];
+const DEFAULT_MOODS = ["Happy","Sad","Energized","Calm","Instrumental","Chill","Focus","Other"];
+const DEFAULT_COUNTRIES = ["Unknown","USA","UK","Canada","France","Germany","Korea","Japan","Netherlands","Other"];
+
+/** ---------------------------
+ * State
+ * -------------------------- */
+let state = loadState() || {
+  songs: [], // {id, title, artist, genre, mood, country, fav}
+  genres: DEFAULT_GENRES.slice(),
+  moods: DEFAULT_MOODS.slice(),
+  countries: DEFAULT_COUNTRIES.slice(),
+  filters: { q:"", genre:"all", mood:"all", country:"all", fav:"all" }
+};
+
+function uid(){
+  return Math.random().toString(16).slice(2) + Date.now().toString(16);
+}
+
+/** ---------------------------
+ * Elements
+ * -------------------------- */
+const pillSongs = document.getElementById("pillSongs");
+const pillArtists = document.getElementById("pillArtists");
+const shownLine = document.getElementById("shownLine");
+
+const listEl = document.getElementById("list");
+
+const formCard = document.getElementById("formCard");
+const btnShowForm = document.getElementById("btnShowForm");
+const btnCloseForm = document.getElementById("btnCloseForm");
+const btnClearForm = document.getElementById("btnClearForm");
+const songForm = document.getElementById("songForm");
+
+const editingId = document.getElementById("editingId");
+const songTitle = document.getElementById("songTitle");
+const artistName = document.getElementById("artistName");
+const favSelect = document.getElementById("favSelect");
+
+const genreSelect = document.getElementById("genreSelect");
+const moodSelect = document.getElementById("moodSelect");
+const countrySelect = document.getElementById("countrySelect");
+
+const genreNew = document.getElementById("genreNew");
+const moodNew = document.getElementById("moodNew");
+const countryNew = document.getElementById("countryNew");
+const btnAddGenre = document.getElementById("btnAddGenre");
+const btnAddMood = document.getElementById("btnAddMood");
+const btnAddCountry = document.getElementById("btnAddCountry");
+
+const searchInput = document.getElementById("searchInput");
+const filterGenre = document.getElementById("filterGenre");
+const filterMood = document.getElementById("filterMood");
+const filterCountry = document.getElementById("filterCountry");
+const filterFav = document.getElementById("filterFav");
+const btnApplyFilters = document.getElementById("btnApplyFilters");
+const btnResetFilters = document.getElementById("btnResetFilters");
+
+const btnExport = document.getElementById("btnExport");
+const btnImport = document.getElementById("btnImport");
+const importFile = document.getElementById("importFile");
+
+const artistList = document.getElementById("artistList");
+const songTitleList = document.getElementById("songTitleList");
+
+const genreChartCanvas = document.getElementById("genreChart");
+const ctx = genreChartCanvas.getContext("2d");
+
+/** ---------------------------
+ * Helpers
+ * -------------------------- */
+function norm(s){ return (s||"").trim(); }
+function key(s){ return norm(s).toLowerCase(); }
+
+function compareAZ(a,b){
+  return key(a).localeCompare(key(b), undefined, {numeric:true, sensitivity:"base"});
+}
+
+function sortSongs(songs){
+  return songs.slice().sort((a,b)=>{
+    const aa = compareAZ(a.artist, b.artist);
+    if(aa !== 0) return aa;
+    return compareAZ(a.title, b.title);
+  });
+}
+
+function uniqueArtistsFromSongs(songs){
+  const set = new Map();
+  for(const s of songs){
+    const k = key(s.artist);
+    if(!set.has(k)) set.set(k, norm(s.artist));
+  }
+  return Array.from(set.values()).sort(compareAZ);
+}
+
+function setSelectOptions(selectEl, list, includeAll){
+  const value = selectEl.value;
+  selectEl.innerHTML = "";
+
+  if(includeAll){
+    const optAll = document.createElement("option");
+    optAll.value = "all";
+    optAll.textContent = "All";
+    selectEl.appendChild(optAll);
+  }
+
+  for(const item of list){
+    const opt = document.createElement("option");
+    opt.value = item;
+    opt.textContent = item;
+    selectEl.appendChild(opt);
+  }
+
+  // restore if possible
+  if(value && Array.from(selectEl.options).some(o=>o.value===value)){
+    selectEl.value = value;
+  }
+}
+
+function refreshDatalists(){
+  const artists = uniqueArtistsFromSongs(state.songs);
+  artistList.innerHTML = artists.map(a=>`<option value="${escapeHtml(a)}"></option>`).join("");
+
+  const titlesSet = new Map();
+  for(const s of state.songs){
+    const k = key(s.title);
+    if(!titlesSet.has(k)) titlesSet.set(k, norm(s.title));
+  }
+  const titles = Array.from(titlesSet.values()).sort(compareAZ);
+  songTitleList.innerHTML = titles.map(t=>`<option value="${escapeHtml(t)}"></option>`).join("");
+}
+
+function escapeHtml(str){
+  return (str||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+
+/** ---------------------------
+ * Filters & view
+ * -------------------------- */
+function applyFiltersToSongs(){
+  const f = state.filters;
+  const q = key(f.q);
+
+  return state.songs.filter(s=>{
+    if(q){
+      const hay = (key(s.artist) + " " + key(s.title));
+      if(!hay.includes(q)) return false;
+    }
+    if(f.genre !== "all" && norm(s.genre) !== f.genre) return false;
+    if(f.mood !== "all" && norm(s.mood) !== f.mood) return false;
+    if(f.country !== "all" && norm(s.country) !== f.country) return false;
+    if(f.fav !== "all"){
+      if(f.fav === "none" && (s.fav !== "none")) return false;
+      if(f.fav !== "none" && s.fav !== f.fav) return false;
+    }
+    return true;
+  });
+}
+
+/** ---------------------------
+ * Rendering
+ * -------------------------- */
+function render(){
+  // ensure selects options
+  setSelectOptions(genreSelect, state.genres, false);
+  setSelectOptions(moodSelect, state.moods, false);
+  setSelectOptions(countrySelect, state.countries, false);
+
+  setSelectOptions(filterGenre, state.genres, true);
+  setSelectOptions(filterMood, state.moods, true);
+  setSelectOptions(filterCountry, state.countries, true);
+
+  // totals
+  const artistsAll = uniqueArtistsFromSongs(state.songs);
+  pillSongs.textContent = `Songs: ${state.songs.length}`;
+  pillArtists.textContent = `Artists: ${artistsAll.length}`;
+
+  // filtered
+  const filtered = sortSongs(applyFiltersToSongs());
+  shownLine.textContent = `${filtered.length} shown`;
+
+  // numbering:
+  // - artist numbers based on filtered *artist list* in A–Z
+  // - song numbers based on filtered sorted list 1..N
+  const artistsFiltered = uniqueArtistsFromSongs(filtered);
+  const artistIndex = new Map();
+  artistsFiltered.forEach((a, i)=> artistIndex.set(key(a), i+1));
+
+  // group songs by artist
+  const byArtist = new Map();
+  for(const s of filtered){
+    const k = key(s.artist);
+    if(!byArtist.has(k)) byArtist.set(k, {artist: norm(s.artist), songs: []});
+    byArtist.get(k).songs.push(s);
+  }
+
+  // render list
+  listEl.innerHTML = "";
+  let songCounter = 0;
+
+  for(const artistNameReal of artistsFiltered){
+    const k = key(artistNameReal);
+    const group = byArtist.get(k);
+    if(!group) continue;
+
+    const artistNo = artistIndex.get(k) || 0;
+
+    const artistCard = document.createElement("div");
+    artistCard.className = "artistCard";
+
+    const top = document.createElement("div");
+    top.className = "artistTop";
+
+    const left = document.createElement("div");
+    left.className = "artistLeft";
+
+    const badge = document.createElement("div");
+    badge.className = "badge";
+    badge.textContent = `A${artistNo}`;
+
+    const nameWrap = document.createElement("div");
+    nameWrap.style.minWidth = "0";
+
+    const name = document.createElement("div");
+    name.className = "artistName";
+    name.textContent = group.artist;
+
+    const sub = document.createElement("div");
+    sub.className = "artistSub";
+    sub.textContent = `${group.songs.length} song(s)`;
+
+    nameWrap.appendChild(name);
+    nameWrap.appendChild(sub);
+
+    left.appendChild(badge);
+    left.appendChild(nameWrap);
+
+    const right = document.createElement("div");
+    right.className = "artistRight";
+    right.textContent = "";
+
+    top.appendChild(left);
+    top.appendChild(right);
+
+    artistCard.appendChild(top);
+
+    // songs in this artist already sorted by title due to global sort, but ensure:
+    const songsSorted = group.songs.slice().sort((a,b)=>compareAZ(a.title,b.title));
+
+    for(const s of songsSorted){
+      songCounter += 1;
+
+      const row = document.createElement("div");
+      row.className = "songRow";
+
+      const main = document.createElement("div");
+      main.className = "songMain";
+
+      const titleLine = document.createElement("div");
+      titleLine.className = "songTitleLine";
+
+      const no = document.createElement("div");
+      no.className = "songNo";
+      no.textContent = `S${songCounter}`;
+
+      const t = document.createElement("div");
+      t.className = "songTitle";
+      t.textContent = s.title;
+
+      titleLine.appendChild(no);
+      titleLine.appendChild(t);
+
+      const chips = document.createElement("div");
+      chips.className = "chips";
+
+      // compact side-by-side chips
+      if(s.genre) chips.appendChild(makeChip(s.genre));
+      if(s.mood) chips.appendChild(makeChip(s.mood));
+      if(s.country) chips.appendChild(makeChip(s.country));
+
+      if(s.fav === "fav") chips.appendChild(makeChip("★ Fav", "fav"));
+      if(s.fav === "xfav") chips.appendChild(makeChip("★★ X-Fav", "xfav"));
+
+      main.appendChild(titleLine);
+      main.appendChild(chips);
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "iconbtn";
+      editBtn.type = "button";
+      editBtn.title = "Edit";
+      editBtn.innerHTML = "✏️";
+      editBtn.addEventListener("click", ()=>startEdit(s.id));
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "iconbtn";
+      delBtn.type = "button";
+      delBtn.title = "Delete";
+      delBtn.innerHTML = "🗑️";
+      delBtn.addEventListener("click", ()=>deleteSong(s.id));
+
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
+
+      row.appendChild(main);
+      row.appendChild(actions);
+
+      artistCard.appendChild(row);
     }
 
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    listEl.appendChild(artistCard);
+  }
+
+  refreshDatalists();
+  drawGenreChart(filtered);
+  saveState();
+}
+
+function makeChip(text, type){
+  const c = document.createElement("div");
+  c.className = "chip" + (type ? ` ${type}` : "");
+  c.textContent = text;
+  return c;
+}
+
+/** ---------------------------
+ * Chart (Genre only)
+ * -------------------------- */
+function drawGenreChart(songs){
+  // count genres
+  const counts = new Map();
+  for(const s of songs){
+    const g = norm(s.genre) || "Unknown";
+    counts.set(g, (counts.get(g)||0) + 1);
+  }
+  // sort by count desc
+  const entries = Array.from(counts.entries()).sort((a,b)=>b[1]-a[1]).slice(0, 10);
+
+  // clear
+  ctx.clearRect(0,0,genreChartCanvas.width,genreChartCanvas.height);
+
+  const W = genreChartCanvas.width;
+  const H = genreChartCanvas.height;
+  const pad = 24;
+  const barH = 16;
+  const gap = 10;
+
+  // background subtle
+  ctx.fillStyle = "rgba(255,255,255,0.03)";
+  ctx.fillRect(0,0,W,H);
+
+  if(entries.length === 0){
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.font = "700 16px system-ui";
+    ctx.fillText("No data yet", pad, H/2);
+    return;
+  }
+
+  const max = Math.max(...entries.map(e=>e[1]));
+  const startY = pad;
+  ctx.font = "700 12px system-ui";
+  ctx.fillStyle = "rgba(255,255,255,0.75)";
+
+  entries.forEach((e, i)=>{
+    const [label, val] = e;
+    const y = startY + i*(barH+gap);
+    const barW = Math.max(4, Math.round((W - pad*2 - 120) * (val / max)));
+
+    // label
+    ctx.fillStyle = "rgba(255,255,255,0.72)";
+    ctx.fillText(label, pad, y + 13);
+
+    // bar
+    const bx = pad + 120;
+    ctx.fillStyle = "rgba(124, 110, 255, 0.55)";
+    ctx.fillRect(bx, y, barW, barH);
+
+    // value
+    ctx.fillStyle = "rgba(255,255,255,0.75)";
+    ctx.fillText(String(val), bx + barW + 10, y + 13);
+  });
+}
+
+/** ---------------------------
+ * Form show/hide
+ * -------------------------- */
+function showForm(){
+  formCard.style.display = "block";
+  // scroll to form nicely on mobile
+  formCard.scrollIntoView({behavior:"smooth", block:"start"});
+}
+function hideForm(){
+  formCard.style.display = "none";
+  clearForm();
+}
+btnShowForm.addEventListener("click", ()=>{
+  clearForm();
+  showForm();
+});
+btnCloseForm.addEventListener("click", hideForm);
+
+function clearForm(){
+  editingId.value = "";
+  songTitle.value = "";
+  artistName.value = "";
+  favSelect.value = "none";
+  // keep current selections; but if empty, set first option
+  if(!genreSelect.value) genreSelect.value = state.genres[0] || "Other";
+  if(!moodSelect.value) moodSelect.value = state.moods[0] || "Other";
+  if(!countrySelect.value) countrySelect.value = state.countries[0] || "Unknown";
+  genreNew.value = "";
+  moodNew.value = "";
+  countryNew.value = "";
+}
+btnClearForm.addEventListener("click", clearForm);
+
+songForm.addEventListener("submit", (e)=>{
+  e.preventDefault();
+  const title = norm(songTitle.value);
+  const artist = norm(artistName.value);
+  if(!title || !artist) return;
+
+  const payload = {
+    title,
+    artist,
+    genre: norm(genreSelect.value) || "",
+    mood: norm(moodSelect.value) || "",
+    country: norm(countrySelect.value) || "",
+    fav: favSelect.value || "none"
+  };
+
+  const id = editingId.value;
+  if(id){
+    const idx = state.songs.findIndex(s=>s.id===id);
+    if(idx >= 0){
+      state.songs[idx] = {...state.songs[idx], ...payload};
+    }
+  }else{
+    state.songs.push({id: uid(), ...payload});
+  }
+
+  render();
+  hideForm(); // ✅ after Save, hide form
+});
+
+/** ---------------------------
+ * CRUD
+ * -------------------------- */
+function startEdit(id){
+  const s = state.songs.find(x=>x.id===id);
+  if(!s) return;
+
+  editingId.value = s.id;
+  songTitle.value = s.title;
+  artistName.value = s.artist;
+
+  // ensure these exist
+  if(s.genre && !state.genres.includes(s.genre)){ state.genres.push(s.genre); }
+  if(s.mood && !state.moods.includes(s.mood)){ state.moods.push(s.mood); }
+  if(s.country && !state.countries.includes(s.country)){ state.countries.push(s.country); }
+
+  // refresh selects then set value
+  setSelectOptions(genreSelect, state.genres, false);
+  setSelectOptions(moodSelect, state.moods, false);
+  setSelectOptions(countrySelect, state.countries, false);
+
+  genreSelect.value = s.genre || state.genres[0] || "Other";
+  moodSelect.value = s.mood || state.moods[0] || "Other";
+  countrySelect.value = s.country || state.countries[0] || "Unknown";
+  favSelect.value = s.fav || "none";
+
+  showForm();
+}
+function deleteSong(id){
+  if(!confirm("Delete this song?")) return;
+  state.songs = state.songs.filter(s=>s.id!==id);
+  render();
+}
+
+/** ---------------------------
+ * Add new tags
+ * -------------------------- */
+function addToList(listName, inputEl, selectEl, filterSelectEl){
+  const v = norm(inputEl.value);
+  if(!v) return;
+
+  const arr = state[listName];
+  if(!arr.some(x=>key(x)===key(v))){
+    arr.push(v);
+    arr.sort(compareAZ);
+  }
+  inputEl.value = "";
+  setSelectOptions(selectEl, arr, false);
+  if(filterSelectEl) setSelectOptions(filterSelectEl, arr, true);
+  selectEl.value = v;
+  render();
+}
+btnAddGenre.addEventListener("click", ()=>addToList("genres", genreNew, genreSelect, filterGenre));
+btnAddMood.addEventListener("click", ()=>addToList("moods", moodNew, moodSelect, filterMood));
+btnAddCountry.addEventListener("click", ()=>addToList("countries", countryNew, countrySelect, filterCountry));
+
+/** ---------------------------
+ * Filters
+ * -------------------------- */
+btnApplyFilters.addEventListener("click", ()=>{
+  state.filters.q = norm(searchInput.value);
+  state.filters.genre = filterGenre.value || "all";
+  state.filters.mood = filterMood.value || "all";
+  state.filters.country = filterCountry.value || "all";
+  state.filters.fav = filterFav.value || "all";
+  render();
+});
+btnResetFilters.addEventListener("click", ()=>{
+  state.filters = { q:"", genre:"all", mood:"all", country:"all", fav:"all" };
+  searchInput.value = "";
+  filterGenre.value = "all";
+  filterMood.value = "all";
+  filterCountry.value = "all";
+  filterFav.value = "all";
+  render();
+});
+
+// keep search field responsive but not spam-render too hard
+let searchTimer = null;
+searchInput.addEventListener("input", ()=>{
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(()=>{
+    state.filters.q = norm(searchInput.value);
+    render();
+  }, 140);
+});
+
+/** ---------------------------
+ * Export / Import
+ * -------------------------- */
+btnExport.addEventListener("click", ()=>{
+  const data = {
+    version: 3,
+    exportedAt: new Date().toISOString(),
+    songs: state.songs,
+    genres: state.genres,
+    moods: state.moods,
+    countries: state.countries
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "song-library-export.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+btnImport.addEventListener("click", ()=> importFile.click());
+
+importFile.addEventListener("change", async (e)=>{
+  const file = e.target.files?.[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if(!data || !Array.isArray(data.songs)){
+      alert("Invalid file. Expected exported JSON with songs array.");
+      return;
     }
 
-    /***********************
-     * Add / Edit / Delete
-     ***********************/
-    function clearForm(){
-      artistIn.value = "";
-      titleIn.value = "";
-      genreIn.selectedIndex = 0;
-      moodIn.selectedIndex = 0;
-      countryIn.selectedIndex = 0;
-      favIn.value = "none";
-      newGenre.value = "";
-      newMood.value = "";
-      newCountry.value = "";
-    }
+    // merge or replace? We'll replace for simplicity
+    if(!confirm("Import will replace your current data on this device. Continue?")) return;
 
-    function upsertSong(existingId=null){
-      const artist = normalize(artistIn.value);
-      const title  = normalize(titleIn.value);
-      const genre  = genreIn.value || "";
-      const mood   = moodIn.value || "";
-      const country = countryIn.value || "";
-      const fav    = favIn.value || "none";
+    state.songs = data.songs.map(s=>({
+      id: s.id || uid(),
+      title: norm(s.title),
+      artist: norm(s.artist),
+      genre: norm(s.genre),
+      mood: norm(s.mood),
+      country: norm(s.country),
+      fav: s.fav || "none"
+    }));
 
-      if(!artist || !title){
-        alert("Please enter Artist and Song Title.");
-        return;
-      }
+    state.genres = Array.isArray(data.genres) ? data.genres.map(norm).filter(Boolean) : DEFAULT_GENRES.slice();
+    state.moods = Array.isArray(data.moods) ? data.moods.map(norm).filter(Boolean) : DEFAULT_MOODS.slice();
+    state.countries = Array.isArray(data.countries) ? data.countries.map(norm).filter(Boolean) : DEFAULT_COUNTRIES.slice();
 
-      if(existingId){
-        const s = state.songs.find(x=>x.id===existingId);
-        if(!s) return;
-        s.artist = artist; s.title = title; s.genre = genre; s.mood = mood; s.country = country; s.fav = fav;
-      }else{
-        state.songs.push({ id: uid(), artist, title, genre, mood, country, fav });
-      }
+    // sort lists
+    state.genres.sort(compareAZ);
+    state.moods.sort(compareAZ);
+    state.countries.sort(compareAZ);
 
-      save();
-      render();
-      clearForm();
-      addForm.style.display = "none";
-      toggleAdd.textContent = "＋ Add new song";
-      toggleAdd.dataset.open = "0";
-    }
-
-    function deleteSong(id){
-      if(!confirm("Delete this song?")) return;
-      state.songs = state.songs.filter(s=>s.id!==id);
-      save(); render();
-    }
-
-    let editingId = null;
-    function editSong(id){
-      const s = state.songs.find(x=>x.id===id);
-      if(!s) return;
-      editingId = id;
-      addForm.style.display = "block";
-      toggleAdd.textContent = "✕ Close";
-      toggleAdd.dataset.open = "1";
-
-      artistIn.value = s.artist || "";
-      titleIn.value  = s.title  || "";
-      genreIn.value  = s.genre  || state.genres[0] || "";
-      moodIn.value   = s.mood   || state.moods[0] || "";
-      countryIn.value = s.country || state.countries[0] || "";
-      favIn.value = s.fav || "none";
-
-      // scroll to form
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    /***********************
-     * Autocomplete (artist + title)
-     ***********************/
-    function uniqueArtists(){
-      const set = new Map();
-      for(const s of state.songs){
-        const a = normalize(s.artist);
-        if(!a) continue;
-        set.set(a.toLowerCase(), a);
-      }
-      return [...set.values()].sort((a,b)=>collator.compare(a,b));
-    }
-
-    function uniqueTitlesForArtist(artist){
-      const set = new Map();
-      const a = normalize(artist).toLowerCase();
-      for(const s of state.songs){
-        if(normalize(s.artist).toLowerCase() !== a) continue;
-        const t = normalize(s.title);
-        if(!t) continue;
-        set.set(t.toLowerCase(), t);
-      }
-      return [...set.values()].sort((a,b)=>collator.compare(a,b));
-    }
-
-    function showAC(listEl, items, onPick){
-      if(!items.length){ listEl.style.display="none"; return; }
-      listEl.innerHTML = "";
-      for(const it of items.slice(0,10)){
-        const div = document.createElement("div");
-        div.className = "acitem";
-        div.textContent = it;
-        div.onclick = ()=>{ onPick(it); listEl.style.display="none"; };
-        listEl.appendChild(div);
-      }
-      listEl.style.display="block";
-    }
-
-    artistIn.addEventListener("input", ()=>{
-      const v = artistIn.value.trim().toLowerCase();
-      if(!v){ artistAC.style.display="none"; return; }
-      const items = uniqueArtists().filter(a=>a.toLowerCase().includes(v));
-      showAC(artistAC, items, (pick)=>{ artistIn.value = pick; artistIn.dispatchEvent(new Event("input")); });
-    });
-
-    titleIn.addEventListener("input", ()=>{
-      const av = normalize(artistIn.value);
-      const v = titleIn.value.trim().toLowerCase();
-      if(!v){ titleAC.style.display="none"; return; }
-
-      let items = [];
-      if(av){
-        items = uniqueTitlesForArtist(av).filter(t=>t.toLowerCase().includes(v));
-      }else{
-        // fallback: suggest titles from all songs
-        const set = new Map();
-        for(const s of state.songs){
-          const t = normalize(s.title);
-          if(t) set.set(t.toLowerCase(), t);
-        }
-        items = [...set.values()].sort((a,b)=>collator.compare(a,b)).filter(t=>t.toLowerCase().includes(v));
-      }
-      showAC(titleAC, items, (pick)=>{ titleIn.value = pick; titleAC.style.display="none"; });
-    });
-
-    document.addEventListener("click", (e)=>{
-      if(!artistAC.contains(e.target) && e.target !== artistIn) artistAC.style.display="none";
-      if(!titleAC.contains(e.target) && e.target !== titleIn) titleAC.style.display="none";
-    });
-
-    /***********************
-     * Genre chart (compact)
-     ***********************/
-    const ctx = el("genreChart").getContext("2d");
-    function renderGenreChart(filtered){
-      // build counts
-      const counts = new Map();
-      for(const s of filtered){
-        const g = normalize(s.genre) || "Unknown";
-        counts.set(g, (counts.get(g) || 0) + 1);
-      }
-      const entries = [...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0, 8);
-      const labels = entries.map(e=>e[0]);
-      const values = entries.map(e=>e[1]);
-
-      drawBarChart(ctx, labels, values);
-    }
-
-    function drawBarChart(ctx, labels, values){
-      const canvas = ctx.canvas;
-      // clear
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-
-      // device pixel ratio scaling for crispness
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = Math.round(rect.width * dpr);
-      canvas.height = Math.round(rect.height * dpr);
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-
-      const w = rect.width, h = rect.height;
-      const padX = 10, padY = 10;
-      const chartW = w - padX*2;
-      const chartH = h - padY*2 - 24;
-
-      const max = Math.max(1, ...values);
-      const barCount = Math.max(1, labels.length);
-      const gap = 10;
-      const barW = Math.max(10, (chartW - gap*(barCount-1)) / barCount);
-
-      // bars
-      for(let i=0;i<labels.length;i++){
-        const v = values[i];
-        const bh = (v / max) * chartH;
-        const x = padX + i*(barW + gap);
-        const y = padY + (chartH - bh);
-
-        // gradient-ish fill with alpha
-        const grd = ctx.createLinearGradient(0, y, 0, y+bh);
-        grd.addColorStop(0, "rgba(122,162,255,.70)");
-        grd.addColorStop(1, "rgba(122,162,255,.25)");
-        ctx.fillStyle = grd;
-        roundRect(ctx, x, y, barW, bh, 10, true, false);
-
-        // value
-        ctx.fillStyle = "rgba(255,255,255,.75)";
-        ctx.font = "12px ui-sans-serif, system-ui";
-        ctx.textAlign = "center";
-        ctx.fillText(String(v), x + barW/2, y - 6);
-      }
-
-      // labels
-      ctx.fillStyle = "rgba(255,255,255,.60)";
-      ctx.font = "12px ui-sans-serif, system-ui";
-      ctx.textAlign = "center";
-      for(let i=0;i<labels.length;i++){
-        const x = padX + i*(barW + gap) + barW/2;
-        ctx.fillText(trunc(labels[i], 9), x, h - 10);
-      }
-    }
-
-    function trunc(s, n){
-      s = String(s);
-      return s.length>n ? s.slice(0,n-1)+"…" : s;
-    }
-
-    function roundRect(ctx, x, y, w, h, r, fill, stroke) {
-      if (w < 2 * r) r = w / 2;
-      if (h < 2 * r) r = h / 2;
-      ctx.beginPath();
-      ctx.moveTo(x+r, y);
-      ctx.arcTo(x+w, y, x+w, y+h, r);
-      ctx.arcTo(x+w, y+h, x, y+h, r);
-      ctx.arcTo(x, y+h, x, y, r);
-      ctx.arcTo(x, y, x+w, y, r);
-      ctx.closePath();
-      if (fill) ctx.fill();
-      if (stroke) ctx.stroke();
-    }
-
-    window.addEventListener("resize", ()=>render());
-
-    /***********************
-     * Wire events
-     ***********************/
-    filtersPanel.addEventListener("toggle", ()=>{ filtersState.textContent = filtersPanel.open ? "Expanded" : "Collapsed"; });
-    chartsPanel.addEventListener("toggle", ()=>{ chartsState.textContent = chartsPanel.open ? "Expanded" : "Collapsed"; });
-
-    applyFilters.onclick = ()=>{
-      state.filters.q = q.value || "";
-      state.filters.fav = favFilter.value || "all";
-      state.filters.genre = genreFilter.value || "all";
-      state.filters.mood = moodFilter.value || "all";
-      state.filters.country = countryFilter.value || "all";
-      save(); render();
-    };
-
-    resetFilters.onclick = ()=>{
-      state.filters = { q:"", fav:"all", genre:"all", mood:"all", country:"all" };
-      save(); render();
-    };
-
-    toggleAdd.onclick = ()=>{
-      const open = toggleAdd.dataset.open === "1";
-      if(open){
-        addForm.style.display = "none";
-        toggleAdd.textContent = "＋ Add new song";
-        toggleAdd.dataset.open = "0";
-        editingId = null;
-      }else{
-        addForm.style.display = "block";
-        toggleAdd.textContent = "✕ Close";
-        toggleAdd.dataset.open = "1";
-      }
-    };
-
-    saveSongBtn.onclick = ()=> upsertSong(editingId);
-    clearFormBtn.onclick = ()=>{ editingId=null; clearForm(); };
-
-    addGenreBtn.onclick = ()=>{
-      const v = newGenre.value;
-      if(ensureInList(state.genres, v)){
-        save();
-        fillSelect(genreIn, state.genres);
-        fillSelect(genreFilter, ["All", ...state.genres], false);
-        genreFilter.options[0].value="all"; genreFilter.options[0].textContent="All";
-        newGenre.value="";
-        render();
-      }
-    };
-
-    addMoodBtn.onclick = ()=>{
-      const v = newMood.value;
-      if(ensureInList(state.moods, v)){
-        save();
-        fillSelect(moodIn, state.moods);
-        fillSelect(moodFilter, ["All", ...state.moods], false);
-        moodFilter.options[0].value="all"; moodFilter.options[0].textContent="All";
-        newMood.value="";
-        render();
-      }
-    };
-
-    addCountryBtn.onclick = ()=>{
-      const v = newCountry.value;
-      if(ensureInList(state.countries, v)){
-        save();
-        fillSelect(countryIn, state.countries);
-        fillSelect(countryFilter, ["All", ...state.countries], false);
-        countryFilter.options[0].value="all"; countryFilter.options[0].textContent="All";
-        newCountry.value="";
-        render();
-      }
-    };
-
-    exportBtn.onclick = ()=>{
-      const blob = new Blob([JSON.stringify({
-        songs: state.songs,
-        genres: state.genres,
-        moods: state.moods,
-        countries: state.countries
-      }, null, 2)], {type:"application/json"});
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "all-songs-backup.json";
-      a.click();
-      URL.revokeObjectURL(a.href);
-    };
-
-    importFile.onchange = async ()=>{
-      const f = importFile.files && importFile.files[0];
-      if(!f) return;
-      const txt = await f.text();
-      try{
-        const data = JSON.parse(txt);
-        if(Array.isArray(data.songs)) state.songs = data.songs;
-        if(Array.isArray(data.genres) && data.genres.length) state.genres = data.genres;
-        if(Array.isArray(data.moods) && data.moods.length) state.moods = data.moods;
-        if(Array.isArray(data.countries) && data.countries.length) state.countries = data.countries;
-        save(); render();
-        alert("Import complete ✅");
-      }catch(e){
-        alert("Invalid JSON file.");
-      }finally{
-        importFile.value = "";
-      }
-    };
-
-    /***********************
-     * Init
-     ***********************/
-    load();
-
-    // Fill selects before first render
-    state.genres.sort((a,b)=>collator.compare(a,b));
-    state.moods.sort((a,b)=>collator.compare(a,b));
-    state.countries.sort((a,b)=>collator.compare(a,b));
-
-    // Start collapsed (important)
-    filtersPanel.open = false;
-    chartsPanel.open = false;
+    // reset filters
+    state.filters = { q:"", genre:"all", mood:"all", country:"all", fav:"all" };
+    searchInput.value = "";
+    filterFav.value = "all";
 
     render();
-  </script>
+    alert("Imported successfully.");
+  }catch(err){
+    alert("Import failed: " + err.message);
+  }finally{
+    importFile.value = "";
+  }
+});
+
+/** ---------------------------
+ * Init
+ * -------------------------- */
+function init(){
+  // set initial selects for filters + form
+  setSelectOptions(genreSelect, state.genres, false);
+  setSelectOptions(moodSelect, state.moods, false);
+  setSelectOptions(countrySelect, state.countries, false);
+
+  setSelectOptions(filterGenre, state.genres, true);
+  setSelectOptions(filterMood, state.moods, true);
+  setSelectOptions(filterCountry, state.countries, true);
+
+  // restore filters UI
+  searchInput.value = state.filters.q || "";
+  filterGenre.value = state.filters.genre || "all";
+  filterMood.value = state.filters.mood || "all";
+  filterCountry.value = state.filters.country || "all";
+  filterFav.value = state.filters.fav || "all";
+
+  render();
+}
+init();
+</script>
 </body>
 </html>
