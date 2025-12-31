@@ -3,1071 +3,782 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>My Music List</title>
+  <title>My Songs</title>
   <style>
     :root{
-      --bg:#0b0c10;
-      --card:#111319;
-      --muted:#9aa3b2;
-      --text:#eef2ff;
-      --line:rgba(255,255,255,.10);
-      --accent:#7c8cff;
-      --accent2:#00d4ff;
-      --danger:#ff5d5d;
-      --ok:#35d07f;
-      --chip:#1a1d27;
-      --chipOn:#23284a;
-      --shadow: 0 14px 35px rgba(0,0,0,.35);
+      --bg:#0b0f14; --card:#121826; --muted:#8aa0b8; --text:#e7eef7;
+      --line:#1f2a3a; --accent:#7dd3fc; --accent2:#a78bfa;
+      --good:#34d399; --warn:#fbbf24;
       --radius:16px;
     }
     *{box-sizing:border-box}
     body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: radial-gradient(1200px 800px at 30% -10%, rgba(124,140,255,.25), transparent 60%),
-                  radial-gradient(900px 700px at 110% 20%, rgba(0,212,255,.18), transparent 55%),
-                  var(--bg);
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:linear-gradient(180deg, #070a0f, #0b0f14);
       color:var(--text);
     }
-    a{color:inherit}
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 18px 14px 40px;
-    }
+    .wrap{max-width:900px; margin:0 auto; padding:16px}
     header{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-bottom:12px;
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      position:sticky; top:0; background:rgba(11,15,20,.9); backdrop-filter: blur(10px);
+      padding:12px 0; z-index:10;
     }
-    .titleRow{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
+    h1{font-size:18px; margin:0; letter-spacing:.3px}
+    .btn{
+      border:1px solid var(--line); background:rgba(18,24,38,.7);
+      color:var(--text); padding:10px 12px; border-radius:12px;
+      cursor:pointer; font-weight:600;
     }
-    h1{
-      margin:0;
-      font-size:20px;
-      letter-spacing:.2px;
-    }
-    .sub{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-    }
-    .toolbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-      justify-content:flex-start;
-    }
-    button, .btnLike{
+    .btn:hover{border-color:#2b3a52}
+    .btn.primary{border-color:rgba(125,211,252,.4); box-shadow:0 0 0 2px rgba(125,211,252,.08) inset}
+    .btn.danger{border-color:rgba(251,113,133,.35)}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .card{
+      background:rgba(18,24,38,.75);
       border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      font-weight:600;
-      font-size:13px;
-      cursor:pointer;
-      transition: transform .04s ease, background .15s ease, border-color .15s ease;
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .grid{display:grid; gap:12px}
+    .grid.two{grid-template-columns:1fr}
+    @media(min-width:720px){ .grid.two{grid-template-columns:1.2fr .8fr} }
+
+    details.card{padding:0}
+    details.card > summary{
+      list-style:none; cursor:pointer; padding:14px;
+      display:flex; align-items:center; justify-content:space-between;
       user-select:none;
     }
-    button:hover{background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.18)}
-    button:active{transform: scale(.99)}
-    .primary{
-      background: linear-gradient(135deg, rgba(124,140,255,.25), rgba(0,212,255,.18));
-      border-color: rgba(124,140,255,.35);
-    }
-    .danger{border-color: rgba(255,93,93,.4)}
-    .ok{border-color: rgba(53,208,127,.35)}
-    .pill{
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      padding:8px 10px;
-      border-radius: 999px;
-      font-size:12px;
-      color:var(--muted);
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-    }
-    .card{
-      background: rgba(17,19,25,.86);
-      backdrop-filter: blur(10px);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .cardHead{
-      padding:12px 12px 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border-bottom:1px solid var(--line);
-    }
-    .cardHead h2{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-    details{
-      border-top:1px solid var(--line);
-    }
-    details > summary{
-      list-style:none;
-      cursor:pointer;
-      padding:12px;
-      color:var(--muted);
-      font-weight:700;
-      font-size:13px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-    }
-    details > summary::-webkit-details-marker{display:none}
-    .filters{
-      padding: 0 12px 12px;
-      display:grid;
-      gap:10px;
-    }
-    .row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-    }
-    .search{
-      flex: 1 1 220px;
-      position:relative;
-    }
-    input[type="text"], select{
+    details.card > summary::-webkit-details-marker{display:none}
+    .chev{opacity:.8}
+    details[open] .chev{transform:rotate(180deg)}
+    .content{padding:0 14px 14px 14px}
+
+    label{font-size:12px; color:var(--muted); display:block; margin:10px 0 6px}
+    input, select{
       width:100%;
-      padding:10px 12px;
+      padding:11px 12px;
       border-radius:12px;
       border:1px solid var(--line);
-      background: rgba(0,0,0,.25);
+      background:#0c1220;
       color:var(--text);
       outline:none;
-      font-size:14px;
     }
-    input::placeholder{color: rgba(238,242,255,.45)}
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
+    input:focus, select:focus{border-color:rgba(125,211,252,.55); box-shadow:0 0 0 3px rgba(125,211,252,.12)}
+    .small{font-size:12px; color:var(--muted)}
+    .pill{
+      display:inline-flex; gap:6px; align-items:center;
+      padding:5px 10px; border-radius:999px;
       border:1px solid var(--line);
-      background: var(--chip);
+      background:rgba(12,18,32,.8);
       color:var(--muted);
       font-size:12px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .chip.on{
-      background: var(--chipOn);
-      color: var(--text);
-      border-color: rgba(124,140,255,.35);
-    }
-    .content{
-      padding: 10px 12px 12px;
-      display:grid;
-      gap:10px;
-    }
-    .artistBlock{
-      border:1px solid var(--line);
-      border-radius: 14px;
-      overflow:hidden;
-      background: rgba(255,255,255,.02);
-    }
-    .artistHeader{
-      padding: 10px 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border-bottom:1px solid var(--line);
-    }
-    .artistLeft{
-      display:flex;
-      align-items:baseline;
-      gap:10px;
-      min-width:0;
-    }
-    .aNum{
-      font-weight:800;
-      font-size:12px;
-      padding:6px 8px;
-      border-radius:999px;
-      border:1px solid rgba(124,140,255,.35);
-      background: rgba(124,140,255,.12);
-      color: var(--text);
-      flex:0 0 auto;
-    }
-    .aName{
-      font-weight:800;
-      font-size:14px;
       white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
-    .aMeta{color:var(--muted); font-size:12px; flex:0 0 auto}
-    .songList{
-      display:grid;
+    .pill.good{color:#b7f7dd; border-color:rgba(52,211,153,.35)}
+    .pill.warn{color:#ffe7b0; border-color:rgba(251,191,36,.35)}
+    .split{
+      display:grid; grid-template-columns:1fr; gap:10px;
     }
+    @media(min-width:560px){ .split{grid-template-columns:1fr 1fr} }
+
+    .list{display:flex; flex-direction:column; gap:10px}
+    .artistCard{
+      border:1px solid var(--line);
+      background:rgba(18,24,38,.6);
+      border-radius:var(--radius);
+      padding:12px;
+    }
+    .artistTop{
+      display:flex; gap:10px; align-items:flex-start; justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .artistName{font-weight:800; letter-spacing:.2px}
+    .artistMeta{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
     .songRow{
-      padding: 10px 10px;
-      display:grid;
-      grid-template-columns: 56px 1fr auto;
-      gap:10px;
-      align-items:center;
-      border-top:1px solid var(--line);
+      border-top:1px dashed rgba(31,42,58,.8);
+      padding-top:10px; margin-top:10px;
+      display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center;
     }
-    .songRow:first-child{border-top:none}
-    .sNum{
-      color:var(--muted);
-      font-weight:800;
-      font-size:12px;
-      text-align:left;
-    }
-    .songMain{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .songTitle{
-      font-size:14px;
-      font-weight:800;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .badges{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-    }
-    .badge{
-      font-size:11px;
-      color: var(--muted);
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:4px 7px;
-      background: rgba(0,0,0,.22);
-    }
-    .badge.fav{border-color: rgba(53,208,127,.35); color: rgba(53,208,127,.95)}
-    .badge.xfav{border-color: rgba(255,204,0,.45); color: rgba(255,204,0,.95)}
-    .actions{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
+    .songTitle{font-weight:650}
+    .songSub{font-size:12px; color:var(--muted); margin-top:2px}
     .iconBtn{
-      width:36px; height:36px;
-      border-radius: 12px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
       border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
+      background:#0c1220;
+      color:var(--text);
+      border-radius:12px;
+      padding:9px 10px;
       cursor:pointer;
     }
-    .iconBtn:hover{background: rgba(255,255,255,.07)}
-    .mini{font-size:12px; color:var(--muted)}
-    .formWrap{
-      padding: 12px;
-      border-top:1px solid var(--line);
-      display:none;
+    .iconBtn:hover{border-color:#2b3a52}
+    .muted{color:var(--muted)}
+    .right{display:flex; gap:8px; align-items:center}
+    .star{
+      width:18px; height:18px; display:inline-block; vertical-align:middle;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,.25));
     }
-    .formWrap.show{display:block}
-    .form{
-      display:grid;
-      gap:10px;
+    .footerRow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between}
+    .hr{height:1px; background:var(--line); margin:10px 0}
+    .toast{
+      position:fixed; left:50%; transform:translateX(-50%);
+      bottom:16px; background:rgba(18,24,38,.95); border:1px solid var(--line);
+      padding:10px 12px; border-radius:999px; font-size:13px; color:var(--text);
+      display:none; z-index:999;
     }
-    .two{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    @media (max-width:560px){
-      .two{grid-template-columns:1fr}
-    }
-    .checkRow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-    }
-    label.chk{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border:1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(0,0,0,.18);
-      cursor:pointer;
-      user-select:none;
-      font-weight:700;
-      font-size:12px;
-      color:var(--muted);
-    }
-    label.chk input{accent-color: var(--accent)}
-    .footerRow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      justify-content:space-between;
-      align-items:center;
-      padding: 12px;
-      border-top:1px solid var(--line);
-      color: var(--muted);
-      font-size:12px;
-    }
-    .hint{color: rgba(238,242,255,.55)}
-    .divider{height:1px; background:var(--line); margin:8px 0}
-    .hidden{display:none !important}
+    .inlineRow{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .inlineRow > *{flex:1}
+    .inlineRow .btn{flex:0 0 auto}
   </style>
 </head>
-
 <body>
 <div class="wrap">
   <header>
-    <div class="titleRow">
-      <div>
-        <h1>My Music List</h1>
-        <p class="sub">Vertical, mobile-first. Artists A–Z, songs A–Z, total song numbering, favorites, mood & genre (selectable). Export/import to move data between devices.</p>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <button class="primary" id="toggleAddBtn">+ Add New Song</button>
-      <button id="exportBtn" class="ok">Export (.json)</button>
-      <label class="btnLike" style="display:inline-flex;gap:8px;align-items:center;cursor:pointer;">
-        Import
-        <input id="importInput" type="file" accept="application/json" style="display:none;">
-      </label>
-      <button id="resetBtn" class="danger">Reset (delete all)</button>
-
-      <span class="pill" id="statsPill">Songs: 0 • Artists: 0</span>
+    <h1>My Songs</h1>
+    <div class="row">
+      <button class="btn primary" id="toggleAdd">Add New Song</button>
+      <button class="btn" id="exportBtn">Export</button>
+      <label class="btn" for="importFile" style="cursor:pointer;">Import</label>
+      <input id="importFile" type="file" accept="application/json" style="display:none;" />
+      <button class="btn danger" id="clearBtn" title="This clears only this device">Clear (device)</button>
     </div>
   </header>
 
-  <div class="card">
-    <div class="cardHead">
-      <h2>Browse</h2>
-      <span class="mini">Search + filters (collapsible)</span>
-    </div>
+  <div class="grid two">
+    <div class="grid">
 
-    <details id="filtersDetails" open>
-      <summary>
-        <span>Filters</span>
-        <span class="mini">tap to collapse</span>
-      </summary>
-      <div class="filters">
-        <div class="row">
-          <div class="search">
-            <input id="searchInput" type="text" placeholder="Search artist or song title…" />
-          </div>
-          <select id="genreFilter">
-            <option value="">All genres</option>
-          </select>
-          <select id="moodFilter">
-            <option value="">All moods</option>
-          </select>
-        </div>
-
-        <div class="row">
-          <div class="chips">
-            <div class="chip" id="favOnlyChip">Favorites only</div>
-            <div class="chip" id="xfavOnlyChip">Extra favorites only</div>
-          </div>
-          <button id="clearFiltersBtn">Clear filters</button>
-        </div>
-      </div>
-    </details>
-
-    <div class="formWrap" id="formWrap">
-      <div class="divider"></div>
-      <div class="form">
-        <div class="two">
+      <!-- Add form hidden until button -->
+      <div class="card" id="addCard" style="display:none;">
+        <div class="row" style="justify-content:space-between;">
           <div>
-            <input id="artistInput" list="artistSuggestions" type="text" placeholder="Artist (e.g. Radiohead)" />
+            <div style="font-weight:800;">Add a song</div>
+            <div class="small">Fast entry — works great on mobile.</div>
+          </div>
+          <button class="btn" id="closeAdd">Close</button>
+        </div>
+
+        <div class="split" style="margin-top:10px;">
+          <div>
+            <label>Artist</label>
+            <input id="artistInput" list="artistSuggestions" placeholder="e.g. Radiohead" autocomplete="off" />
             <datalist id="artistSuggestions"></datalist>
           </div>
           <div>
-            <input id="titleInput" list="titleSuggestions" type="text" placeholder="Song title (e.g. Karma Police)" />
-            <datalist id="titleSuggestions"></datalist>
+            <label>Song title</label>
+            <input id="titleInput" list="songSuggestions" placeholder="e.g. Karma Police" autocomplete="off" />
+            <datalist id="songSuggestions"></datalist>
           </div>
         </div>
 
-        <div class="two">
+        <div class="split">
           <div>
+            <label>Genre</label>
             <select id="genreSelect"></select>
-            <div class="mini" style="margin-top:6px;">Genre is selectable (no typing needed). You can also add your own genre below.</div>
+            <div id="newGenreRow" class="inlineRow" style="margin-top:8px; display:none;">
+              <input id="newGenreInput" placeholder="Type new genre..." />
+              <button class="btn" id="addGenreBtn">Add</button>
+            </div>
           </div>
           <div>
+            <label>Mood</label>
             <select id="moodSelect"></select>
-            <div class="mini" style="margin-top:6px;">Mood is selectable (no typing needed).</div>
           </div>
         </div>
 
-        <div class="row">
-          <input id="newGenreInput" type="text" placeholder="Add a new genre (optional) — e.g. Lo-fi" />
-          <button id="addGenreBtn">Add genre</button>
+        <div class="row" style="margin-top:8px;">
+          <label style="margin:0; display:flex; gap:10px; align-items:center;">
+            <input type="checkbox" id="favCheck" style="width:auto;" />
+            <span>Favorite</span>
+          </label>
+          <label style="margin:0; display:flex; gap:10px; align-items:center;">
+            <input type="checkbox" id="xFavCheck" style="width:auto;" />
+            <span>Extra Favorite</span>
+          </label>
         </div>
 
-        <div class="checkRow">
-          <label class="chk"><input id="favInput" type="checkbox"> Favorite</label>
-          <label class="chk"><input id="xfavInput" type="checkbox"> Extra favorite</label>
-        </div>
-
-        <div class="row">
-          <button class="primary" id="addSongBtn">Add</button>
-          <button id="cancelAddBtn">Cancel</button>
-          <span class="mini hint">Tip: use “Artist – Song Title” style if you want, but you don’t need to.</span>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn primary" id="addBtn">Save song</button>
+          <span class="small muted" id="addHint"></span>
         </div>
       </div>
+
+      <!-- Collapsible Filters -->
+      <details class="card" open>
+        <summary>
+          <div>
+            <div style="font-weight:800;">Filters</div>
+            <div class="small">Collapsed = more space. Open when you need it.</div>
+          </div>
+          <div class="chev">▾</div>
+        </summary>
+        <div class="content">
+          <div class="split">
+            <div>
+              <label>Search</label>
+              <input id="searchInput" placeholder="Search artist or song..." />
+            </div>
+            <div>
+              <label>Filter: Favorites</label>
+              <select id="favFilter">
+                <option value="all">All</option>
+                <option value="fav">Favorite only</option>
+                <option value="xfav">Extra Favorite only</option>
+                <option value="anyfav">Favorite or Extra Favorite</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="split">
+            <div>
+              <label>Filter: Genre</label>
+              <select id="genreFilter"></select>
+            </div>
+            <div>
+              <label>Filter: Mood</label>
+              <select id="moodFilter"></select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn" id="resetFilters">Reset filters</button>
+            <span class="small muted">Tip: everything is always sorted A–Z.</span>
+          </div>
+        </div>
+      </details>
+
+      <!-- Main list -->
+      <div class="card">
+        <div class="footerRow">
+          <div class="artistMeta">
+            <span class="pill" id="totalSongsPill">Songs: 0</span>
+            <span class="pill" id="totalArtistsPill">Artists: 0</span>
+            <span class="pill good" id="favPill">Fav: 0</span>
+            <span class="pill warn" id="xFavPill">X-Fav: 0</span>
+          </div>
+          <div class="small muted">Tap a song to edit.</div>
+        </div>
+        <div class="hr"></div>
+        <div id="list" class="list"></div>
+      </div>
+
     </div>
 
-    <div class="content" id="listRoot"></div>
-
-    <div class="footerRow">
-      <div>
-        <div><strong>Local storage:</strong> saved automatically on this device/browser.</div>
-        <div class="hint">To move to another device: Export JSON → Import on the other device.</div>
+    <!-- Side: quick guide -->
+    <div class="grid">
+      <div class="card">
+        <div style="font-weight:800;">No horizontal scrolling</div>
+        <div class="small" style="margin-top:6px;">
+          This layout is built for vertical scrolling only. Important info (artist + title + numbering) is always visible.
+        </div>
+        <div class="hr"></div>
+        <div class="small">
+          <b>Sync between devices:</b><br/>
+          Use <b>Export</b> on device A → save JSON → on device B use <b>Import</b>.
+          (Automatic sync via GitHub alone is not possible without a backend.)
+        </div>
       </div>
-      <div class="hint" id="lastSavedText"></div>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-(() => {
-  const STORAGE_KEY = "my_music_list_v1";
-  const GENRE_KEY = "my_music_genres_v1";
-
-  // Default genres (includes your requested additions)
-  const defaultGenres = [
-    "Pop","Rock","Hip-Hop/Rap","R&B/Soul","Electronic","Jazz","Classical","Indie",
-    "K-Pop","Country","Hard Rock","Gospel","Metal Rock","French"
-  ];
-
-  const moods = ["", "Sad", "Happy", "Energetic", "Instrumental", "Calm"];
-
-  // Elements
-  const listRoot = document.getElementById("listRoot");
-  const statsPill = document.getElementById("statsPill");
-  const lastSavedText = document.getElementById("lastSavedText");
-
-  const searchInput = document.getElementById("searchInput");
-  const genreFilter = document.getElementById("genreFilter");
-  const moodFilter = document.getElementById("moodFilter");
-  const favOnlyChip = document.getElementById("favOnlyChip");
-  const xfavOnlyChip = document.getElementById("xfavOnlyChip");
-  const clearFiltersBtn = document.getElementById("clearFiltersBtn");
-
-  const formWrap = document.getElementById("formWrap");
-  const toggleAddBtn = document.getElementById("toggleAddBtn");
-  const cancelAddBtn = document.getElementById("cancelAddBtn");
-
-  const artistInput = document.getElementById("artistInput");
-  const titleInput = document.getElementById("titleInput");
-  const genreSelect = document.getElementById("genreSelect");
-  const moodSelect = document.getElementById("moodSelect");
-  const favInput = document.getElementById("favInput");
-  const xfavInput = document.getElementById("xfavInput");
-
-  const newGenreInput = document.getElementById("newGenreInput");
-  const addGenreBtn = document.getElementById("addGenreBtn");
-
-  const addSongBtn = document.getElementById("addSongBtn");
-  const exportBtn = document.getElementById("exportBtn");
-  const importInput = document.getElementById("importInput");
-  const resetBtn = document.getElementById("resetBtn");
-
-  const artistSuggestions = document.getElementById("artistSuggestions");
-  const titleSuggestions = document.getElementById("titleSuggestions");
-
-  // State
-  let songs = loadSongs();
-  let genres = loadGenres();
-
-  let filters = {
-    search: "",
-    genre: "",
-    mood: "",
-    favOnly: false,
-    xfavOnly: false,
-  };
-
-  function nowStamp(){
-    const d = new Date();
-    return d.toLocaleString();
-  }
-
-  function saveSongs(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(songs));
-    lastSavedText.textContent = "Last saved: " + nowStamp();
-  }
+  // ======= Storage =======
+  const STORAGE_KEY = "mySongsDB_v1";
+  const STORAGE_KEY_GENRES = "mySongsGenres_v1";
 
   function loadSongs(){
     try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    }catch(e){
-      return [];
-    }
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    }catch{ return []; }
+  }
+  function saveSongs(songs){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(songs));
   }
 
-  function saveGenres(){
-    localStorage.setItem(GENRE_KEY, JSON.stringify(genres));
-  }
+  const DEFAULT_GENRES = [
+    "Pop","Rock","Hip-Hop","R&B","Jazz","Classical","Electronic","Indie",
+    "K-pop","Country","Hard Rock","Gospel","Metal Rock","French"
+  ];
+
+  const DEFAULT_MOODS = ["Any","Happy","Sad","Energetic","Calm","Instrumental"];
 
   function loadGenres(){
     try{
-      const raw = localStorage.getItem(GENRE_KEY);
-      if(raw){
-        const parsed = JSON.parse(raw);
-        // Merge defaults in case user imported older list
-        const merged = Array.from(new Set([...defaultGenres, ...parsed]));
-        merged.sort((a,b)=>a.localeCompare(b));
-        return merged;
-      }
-    }catch(e){}
-    const g = [...defaultGenres].sort((a,b)=>a.localeCompare(b));
-    localStorage.setItem(GENRE_KEY, JSON.stringify(g));
-    return g;
+      const g = JSON.parse(localStorage.getItem(STORAGE_KEY_GENRES));
+      if(Array.isArray(g) && g.length) return g;
+    }catch{}
+    return [...DEFAULT_GENRES];
+  }
+  function saveGenres(genres){
+    localStorage.setItem(STORAGE_KEY_GENRES, JSON.stringify(genres));
   }
 
-  function uid(){
-    return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
+  // ======= UI refs =======
+  const listEl = document.getElementById("list");
+
+  const addCard = document.getElementById("addCard");
+  const toggleAddBtn = document.getElementById("toggleAdd");
+  const closeAddBtn = document.getElementById("closeAdd");
+
+  const artistInput = document.getElementById("artistInput");
+  const titleInput = document.getElementById("titleInput");
+
+  const genreSelect = document.getElementById("genreSelect");
+  const moodSelect = document.getElementById("moodSelect");
+  const favCheck = document.getElementById("favCheck");
+  const xFavCheck = document.getElementById("xFavCheck");
+  const addBtn = document.getElementById("addBtn");
+  const addHint = document.getElementById("addHint");
+
+  const searchInput = document.getElementById("searchInput");
+  const favFilter = document.getElementById("favFilter");
+  const genreFilter = document.getElementById("genreFilter");
+  const moodFilter = document.getElementById("moodFilter");
+  const resetFilters = document.getElementById("resetFilters");
+
+  const totalSongsPill = document.getElementById("totalSongsPill");
+  const totalArtistsPill = document.getElementById("totalArtistsPill");
+  const favPill = document.getElementById("favPill");
+  const xFavPill = document.getElementById("xFavPill");
+
+  const exportBtn = document.getElementById("exportBtn");
+  const importFile = document.getElementById("importFile");
+  const clearBtn = document.getElementById("clearBtn");
+
+  const artistSuggestions = document.getElementById("artistSuggestions");
+  const songSuggestions = document.getElementById("songSuggestions");
+
+  const newGenreRow = document.getElementById("newGenreRow");
+  const newGenreInput = document.getElementById("newGenreInput");
+  const addGenreBtn = document.getElementById("addGenreBtn");
+
+  const toastEl = document.getElementById("toast");
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.style.display = "block";
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(()=> toastEl.style.display="none", 1800);
   }
 
-  function normalize(s){ return (s || "").trim(); }
-  function ci(s){ return (s || "").toLowerCase(); }
+  // ======= Data =======
+  let songs = loadSongs();
+  let genres = loadGenres();
 
-  function sortSongsInPlace(arr){
+  // Song schema:
+  // { id, artist, title, genre, mood, fav, xfav, createdAt }
+
+  // ======= Helpers =======
+  function norm(s){ return (s||"").trim(); }
+  function sortAZ(a,b){
+    return a.localeCompare(b, undefined, { sensitivity:"base" });
+  }
+  function uniqueArtistsFromSongs(arr){
+    const set = new Set(arr.map(x => x.artist.toLowerCase()));
+    return set.size;
+  }
+  function rebuildSuggestions(){
+    const artists = [...new Set(songs.map(s=>s.artist).filter(Boolean))].sort(sortAZ);
+    const titles = [...new Set(songs.map(s=>s.title).filter(Boolean))].sort(sortAZ);
+
+    artistSuggestions.innerHTML = artists.map(a=>`<option value="${escapeHtml(a)}"></option>`).join("");
+    songSuggestions.innerHTML = titles.map(t=>`<option value="${escapeHtml(t)}"></option>`).join("");
+  }
+  function escapeHtml(str){
+    return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  }
+
+  function buildSelectOptions(selectEl, options, { includeAny=false, anyLabel="Any", extraOptions=[] }={}){
+    const opts = [];
+    if(includeAny) opts.push({value:"any", label:anyLabel});
+    for(const o of options) opts.push({value:o, label:o});
+    for(const ex of extraOptions) opts.push(ex);
+    selectEl.innerHTML = opts.map(o=>`<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`).join("");
+  }
+
+  function initSelects(){
+    // Add form selects
+    buildSelectOptions(genreSelect, genres, {
+      includeAny: true, anyLabel: "Choose genre…",
+      extraOptions: [{value:"__add__", label:"+ Add new genre…"}]
+    });
+    buildSelectOptions(moodSelect, DEFAULT_MOODS.filter(m=>m!=="Any"), { includeAny:true, anyLabel:"Choose mood…" });
+
+    // Filter selects
+    buildSelectOptions(genreFilter, genres, { includeAny:true, anyLabel:"Any genre" });
+    buildSelectOptions(moodFilter, DEFAULT_MOODS.filter(m=>m!=="Any"), { includeAny:true, anyLabel:"Any mood" });
+  }
+
+  function applyAddGenreUI(){
+    if(genreSelect.value === "__add__"){
+      newGenreRow.style.display = "flex";
+      newGenreInput.focus();
+    } else {
+      newGenreRow.style.display = "none";
+    }
+  }
+
+  // ======= Rendering =======
+  function getFilteredSongs(){
+    let arr = [...songs];
+
+    // always keep clean sorting baseline later
+    const q = norm(searchInput.value).toLowerCase();
+    if(q){
+      arr = arr.filter(s =>
+        s.artist.toLowerCase().includes(q) ||
+        s.title.toLowerCase().includes(q)
+      );
+    }
+
+    // favorite filter
+    const ff = favFilter.value;
+    if(ff === "fav") arr = arr.filter(s=>!!s.fav);
+    if(ff === "xfav") arr = arr.filter(s=>!!s.xfav);
+    if(ff === "anyfav") arr = arr.filter(s=>!!s.fav || !!s.xfav);
+
+    // genre filter
+    const gf = genreFilter.value;
+    if(gf !== "any") arr = arr.filter(s => (s.genre||"") === gf);
+
+    // mood filter
+    const mf = moodFilter.value;
+    if(mf !== "any") arr = arr.filter(s => (s.mood||"") === mf);
+
+    // Sort by Artist A-Z then Title A-Z
     arr.sort((a,b)=>{
-      const aArtist = ci(a.artist), bArtist = ci(b.artist);
-      if(aArtist !== bArtist) return aArtist.localeCompare(bArtist);
-      const aTitle = ci(a.title), bTitle = ci(b.title);
-      return aTitle.localeCompare(bTitle);
+      const c = sortAZ(a.artist, b.artist);
+      if(c !== 0) return c;
+      return sortAZ(a.title, b.title);
     });
-  }
 
-  function updateSelectOptions(){
-    // Genre select (add form)
-    genreSelect.innerHTML = "";
-    const g0 = document.createElement("option");
-    g0.value = "";
-    g0.textContent = "Genre (optional)";
-    genreSelect.appendChild(g0);
-    for(const g of genres){
-      const opt = document.createElement("option");
-      opt.value = g;
-      opt.textContent = g;
-      genreSelect.appendChild(opt);
-    }
-
-    // Genre filter
-    const currentGenre = genreFilter.value;
-    genreFilter.innerHTML = `<option value="">All genres</option>`;
-    for(const g of genres){
-      const opt = document.createElement("option");
-      opt.value = g;
-      opt.textContent = g;
-      genreFilter.appendChild(opt);
-    }
-    genreFilter.value = currentGenre || "";
-
-    // Mood select
-    moodSelect.innerHTML = "";
-    const m0 = document.createElement("option");
-    m0.value = "";
-    m0.textContent = "Mood (optional)";
-    moodSelect.appendChild(m0);
-    for(const m of moods){
-      if(!m) continue;
-      const opt = document.createElement("option");
-      opt.value = m;
-      opt.textContent = m;
-      moodSelect.appendChild(opt);
-    }
-
-    // Mood filter
-    const currentMood = moodFilter.value;
-    moodFilter.innerHTML = `<option value="">All moods</option>`;
-    for(const m of moods){
-      if(!m) continue;
-      const opt = document.createElement("option");
-      opt.value = m;
-      opt.textContent = m;
-      moodFilter.appendChild(opt);
-    }
-    moodFilter.value = currentMood || "";
-  }
-
-  function updateSuggestions(){
-    const artistSet = new Set();
-    const titleSet = new Set();
-    for(const s of songs){
-      if(s.artist) artistSet.add(s.artist.trim());
-      if(s.title) titleSet.add(s.title.trim());
-    }
-    const artistsSorted = Array.from(artistSet).sort((a,b)=>a.localeCompare(b));
-    const titlesSorted = Array.from(titleSet).sort((a,b)=>a.localeCompare(b));
-
-    artistSuggestions.innerHTML = "";
-    for(const a of artistsSorted){
-      const opt = document.createElement("option");
-      opt.value = a;
-      artistSuggestions.appendChild(opt);
-    }
-
-    titleSuggestions.innerHTML = "";
-    for(const t of titlesSorted){
-      const opt = document.createElement("option");
-      opt.value = t;
-      titleSuggestions.appendChild(opt);
-    }
-  }
-
-  function applyFilters(arr){
-    const q = ci(filters.search);
-    return arr.filter(s=>{
-      if(filters.genre && (s.genre || "") !== filters.genre) return false;
-      if(filters.mood && (s.mood || "") !== filters.mood) return false;
-      if(filters.favOnly && !s.favorite) return false;
-      if(filters.xfavOnly && !s.extraFavorite) return false;
-
-      if(q){
-        const hay = (ci(s.artist) + " " + ci(s.title));
-        if(!hay.includes(q)) return false;
-      }
-      return true;
-    });
-  }
-
-  function groupByArtist(arr){
-    const map = new Map();
-    for(const s of arr){
-      const key = (s.artist || "").trim();
-      if(!map.has(key)) map.set(key, []);
-      map.get(key).push(s);
-    }
-    // sort groups and songs
-    const artists = Array.from(map.keys()).sort((a,b)=>ci(a).localeCompare(ci(b)));
-    const grouped = artists.map(a=>{
-      const list = map.get(a);
-      list.sort((x,y)=>ci(x.title).localeCompare(ci(y.title)));
-      return [a, list];
-    });
-    return grouped;
+    return arr;
   }
 
   function render(){
-    sortSongsInPlace(songs);
-    updateSelectOptions();
-    updateSuggestions();
+    const arr = getFilteredSongs();
 
-    const filtered = applyFilters(songs);
-    const grouped = groupByArtist(filtered);
-
+    // Pills counts based on FULL songs, not filtered
     const totalSongs = songs.length;
-    const totalArtists = new Set(songs.map(s=> (s.artist||"").trim()).filter(Boolean)).size;
-    statsPill.textContent = `Songs: ${totalSongs} • Artists: ${totalArtists}`;
+    const totalArtists = uniqueArtistsFromSongs(songs);
+    const totalFav = songs.filter(s=>s.fav).length;
+    const totalXFav = songs.filter(s=>s.xfav).length;
 
-    listRoot.innerHTML = "";
+    totalSongsPill.textContent = `Songs: ${totalSongs}`;
+    totalArtistsPill.textContent = `Artists: ${totalArtists}`;
+    favPill.textContent = `Fav: ${totalFav}`;
+    xFavPill.textContent = `X-Fav: ${totalXFav}`;
 
-    // total song numbering = based on filtered view order (artists A-Z, songs A-Z)
-    let songCounter = 0;
+    // Group by artist
+    const grouped = new Map();
+    for(const s of arr){
+      if(!grouped.has(s.artist)) grouped.set(s.artist, []);
+      grouped.get(s.artist).push(s);
+    }
 
-    grouped.forEach(([artistName, list], artistIdx) => {
-      if(!artistName && list.length===0) return;
+    const artistNames = [...grouped.keys()].sort(sortAZ);
 
-      const block = document.createElement("div");
-      block.className = "artistBlock";
+    listEl.innerHTML = "";
+    if(arr.length === 0){
+      listEl.innerHTML = `<div class="small muted">No results. Try clearing filters or adding songs.</div>`;
+      return;
+    }
 
-      const head = document.createElement("div");
-      head.className = "artistHeader";
+    // Global song index (in filtered list)
+    let globalIndex = 0;
+
+    // Artist numbering (in filtered list)
+    artistNames.forEach((artist, aIdx)=>{
+      const songsOfArtist = grouped.get(artist) || [];
+      // songs already sorted in arr, but ensure:
+      songsOfArtist.sort((x,y)=>sortAZ(x.title,y.title));
+
+      const artistCard = document.createElement("div");
+      artistCard.className = "artistCard";
+
+      const top = document.createElement("div");
+      top.className = "artistTop";
 
       const left = document.createElement("div");
-      left.className = "artistLeft";
-
-      const aNum = document.createElement("div");
-      aNum.className = "aNum";
-      aNum.textContent = `Artist #${artistIdx+1}`;
-
-      const aName = document.createElement("div");
-      aName.className = "aName";
-      aName.textContent = artistName || "(No artist)";
-
-      left.appendChild(aNum);
-      left.appendChild(aName);
+      left.innerHTML = `
+        <div class="artistName">#${aIdx+1} ${escapeHtml(artist)}</div>
+        <div class="small muted">${songsOfArtist.length} song(s)</div>
+      `;
 
       const meta = document.createElement("div");
-      meta.className = "aMeta";
-      meta.textContent = `${list.length} song${list.length===1?"":"s"}`;
+      meta.className = "artistMeta";
+      // show most common mood/genre? keep minimal: just a pill count
+      meta.innerHTML = `
+        <span class="pill">${songsOfArtist.length} songs</span>
+      `;
 
-      head.appendChild(left);
-      head.appendChild(meta);
+      top.appendChild(left);
+      top.appendChild(meta);
+      artistCard.appendChild(top);
 
-      const songList = document.createElement("div");
-      songList.className = "songList";
-
-      list.forEach(s => {
-        songCounter += 1;
-
+      songsOfArtist.forEach((s, idx)=>{
+        globalIndex++;
         const row = document.createElement("div");
         row.className = "songRow";
 
-        const sNum = document.createElement("div");
-        sNum.className = "sNum";
-        sNum.textContent = `Song #${songCounter}`;
+        const num = document.createElement("div");
+        num.className = "small muted";
+        num.innerHTML = `<div>#${globalIndex}</div><div class="small muted">(${idx+1})</div>`; // global + within-artist
 
-        const main = document.createElement("div");
-        main.className = "songMain";
+        const mid = document.createElement("div");
+        const badges = [];
+        if(s.genre) badges.push(`<span class="pill">${escapeHtml(s.genre)}</span>`);
+        if(s.mood) badges.push(`<span class="pill">${escapeHtml(s.mood)}</span>`);
+        if(s.fav) badges.push(`<span class="pill good">★ Fav</span>`);
+        if(s.xfav) badges.push(`<span class="pill warn">✦ X-Fav</span>`);
 
-        const title = document.createElement("div");
-        title.className = "songTitle";
-        title.textContent = s.title || "(No title)";
+        mid.innerHTML = `
+          <div class="songTitle">${escapeHtml(s.title)}</div>
+          <div class="songSub">${badges.join(" ")}</div>
+        `;
 
-        const badges = document.createElement("div");
-        badges.className = "badges";
+        const right = document.createElement("div");
+        right.className = "right";
+        right.innerHTML = `
+          <button class="iconBtn" title="Edit">Edit</button>
+          <button class="iconBtn" title="Delete">Del</button>
+        `;
 
-        if(s.genre){
-          const b = document.createElement("span");
-          b.className = "badge";
-          b.textContent = s.genre;
-          badges.appendChild(b);
-        }
-        if(s.mood){
-          const b = document.createElement("span");
-          b.className = "badge";
-          b.textContent = s.mood;
-          badges.appendChild(b);
-        }
-        if(s.favorite){
-          const b = document.createElement("span");
-          b.className = "badge fav";
-          b.textContent = "Favorite";
-          badges.appendChild(b);
-        }
-        if(s.extraFavorite){
-          const b = document.createElement("span");
-          b.className = "badge xfav";
-          b.textContent = "Extra";
-          badges.appendChild(b);
-        }
+        // Edit on tap
+        right.children[0].addEventListener("click", ()=> openEdit(s.id));
+        right.children[1].addEventListener("click", ()=> deleteSong(s.id));
 
-        main.appendChild(title);
-        if(badges.childNodes.length) main.appendChild(badges);
+        // Also allow tapping middle to edit
+        mid.style.cursor = "pointer";
+        mid.addEventListener("click", ()=> openEdit(s.id));
 
-        const actions = document.createElement("div");
-        actions.className = "actions";
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "iconBtn";
-        editBtn.title = "Edit";
-        editBtn.innerHTML = "✎";
-        editBtn.onclick = () => editSong(s.id);
-
-        const delBtn = document.createElement("button");
-        delBtn.className = "iconBtn";
-        delBtn.title = "Delete";
-        delBtn.innerHTML = "🗑";
-        delBtn.onclick = () => deleteSong(s.id);
-
-        actions.appendChild(editBtn);
-        actions.appendChild(delBtn);
-
-        row.appendChild(sNum);
-        row.appendChild(main);
-        row.appendChild(actions);
-
-        songList.appendChild(row);
+        row.appendChild(num);
+        row.appendChild(mid);
+        row.appendChild(right);
+        artistCard.appendChild(row);
       });
 
-      block.appendChild(head);
-      block.appendChild(songList);
-      listRoot.appendChild(block);
+      listEl.appendChild(artistCard);
     });
-
-    if(grouped.length === 0){
-      const empty = document.createElement("div");
-      empty.className = "mini";
-      empty.style.padding = "12px";
-      empty.textContent = "No results. Try clearing filters or add a new song.";
-      listRoot.appendChild(empty);
-    }
   }
 
-  function clearForm(){
-    artistInput.value = "";
-    titleInput.value = "";
-    genreSelect.value = "";
-    moodSelect.value = "";
-    favInput.checked = false;
-    xfavInput.checked = false;
-  }
-
-  function showForm(show){
-    formWrap.classList.toggle("show", show);
-    toggleAddBtn.textContent = show ? "Close Add Form" : "+ Add New Song";
-    if(show){
-      setTimeout(() => artistInput.focus(), 50);
-    }else{
-      clearForm();
-    }
-  }
-
+  // ======= CRUD =======
   function addSong(){
-    const artist = normalize(artistInput.value);
-    const title = normalize(titleInput.value);
-    const genre = genreSelect.value || "";
-    const mood = moodSelect.value || "";
-    const favorite = !!favInput.checked;
-    const extraFavorite = !!xfavInput.checked;
+    const artist = norm(artistInput.value);
+    const title = norm(titleInput.value);
+
+    const genreVal = genreSelect.value;
+    const moodVal = moodSelect.value;
 
     if(!artist || !title){
-      alert("Please enter both Artist and Song Title.");
+      addHint.textContent = "Artist and Song Title are required.";
+      toast("Fill Artist + Song Title");
       return;
     }
+    if(genreVal === "any" || genreVal === "__add__" || moodVal === "any"){
+      // allow empty genre/mood if user doesn't care
+    }
 
-    // Prevent exact duplicates (artist+title)
-    const exists = songs.some(s => ci(s.artist)===ci(artist) && ci(s.title)===ci(title));
+    // Prevent exact duplicates (same artist + title)
+    const exists = songs.some(s =>
+      s.artist.toLowerCase() === artist.toLowerCase() &&
+      s.title.toLowerCase() === title.toLowerCase()
+    );
     if(exists){
-      alert("That song already exists (same artist + title).");
+      addHint.textContent = "This song already exists.";
+      toast("Already exists");
       return;
     }
 
-    songs.push({
-      id: uid(),
+    const song = {
+      id: crypto.randomUUID(),
       artist,
       title,
-      genre,
-      mood,
-      favorite,
-      extraFavorite,
+      genre: (genreVal !== "any" && genreVal !== "__add__") ? genreVal : "",
+      mood: (moodVal !== "any") ? moodVal : "",
+      fav: !!favCheck.checked,
+      xfav: !!xFavCheck.checked,
       createdAt: Date.now()
-    });
+    };
 
-    saveSongs();
+    songs.push(song);
+    saveSongs(songs);
+
+    addHint.textContent = "";
+    favCheck.checked = false;
+    xFavCheck.checked = false;
+    titleInput.value = "";
+    // keep artist for speed if adding many for same artist
+    toast("Saved");
+
+    rebuildSuggestions();
     render();
-    clearForm();
-    artistInput.focus();
   }
 
   function deleteSong(id){
-    const s = songs.find(x=>x.id===id);
+    songs = songs.filter(s=>s.id !== id);
+    saveSongs(songs);
+    rebuildSuggestions();
+    render();
+    toast("Deleted");
+  }
+
+  function openEdit(id){
+    const s = songs.find(x=>x.id === id);
     if(!s) return;
-    if(!confirm(`Delete: ${s.artist} — ${s.title}?`)) return;
-    songs = songs.filter(x=>x.id!==id);
-    saveSongs();
+
+    // Simple prompt-based edit (minimal + mobile friendly)
+    // If you want a modal later, we can do it too.
+    const newArtist = norm(prompt("Edit artist:", s.artist) ?? s.artist);
+    if(!newArtist) return;
+
+    const newTitle = norm(prompt("Edit song title:", s.title) ?? s.title);
+    if(!newTitle) return;
+
+    const newGenre = norm(prompt("Edit genre (leave empty for none):", s.genre || "") ?? (s.genre || ""));
+    const newMood = norm(prompt("Edit mood (leave empty for none):", s.mood || "") ?? (s.mood || ""));
+
+    const fav = confirm("Favorite? OK = yes, Cancel = no");
+    const xfav = confirm("Extra Favorite? OK = yes, Cancel = no");
+
+    s.artist = newArtist;
+    s.title = newTitle;
+    s.genre = newGenre;
+    s.mood = newMood;
+    s.fav = fav;
+    s.xfav = xfav;
+
+    saveSongs(songs);
+    rebuildSuggestions();
     render();
+    toast("Updated");
   }
 
-  function editSong(id){
-    const s = songs.find(x=>x.id===id);
-    if(!s) return;
-
-    // simple prompt-based edit to keep UI minimalistic for mobile
-    // (If you want, I can also build a nicer inline editor later.)
-    const newArtist = prompt("Edit Artist:", s.artist);
-    if(newArtist === null) return;
-    const newTitle = prompt("Edit Song Title:", s.title);
-    if(newTitle === null) return;
-
-    const a = normalize(newArtist);
-    const t = normalize(newTitle);
-    if(!a || !t){
-      alert("Artist and title cannot be empty.");
-      return;
-    }
-
-    // Optional quick toggles
-    const fav = confirm("Set as Favorite? (OK = yes, Cancel = no)");
-    const xfav = confirm("Set as Extra Favorite? (OK = yes, Cancel = no)");
-
-    // Keep existing genre/mood unless user wants to change via prompts
-    const changeGenre = confirm("Change Genre? (OK = yes, Cancel = keep)");
-    let g = s.genre || "";
-    if(changeGenre){
-      const gPick = prompt("Type genre exactly (or leave empty). For best results use the dropdown in Add form.", g);
-      if(gPick !== null) g = normalize(gPick);
-    }
-
-    const changeMood = confirm("Change Mood? (OK = yes, Cancel = keep)");
-    let m = s.mood || "";
-    if(changeMood){
-      const mPick = prompt("Type mood exactly (Sad/Happy/Energetic/Instrumental/Calm) or leave empty:", m);
-      if(mPick !== null) m = normalize(mPick);
-    }
-
-    s.artist = a;
-    s.title = t;
-    s.favorite = fav;
-    s.extraFavorite = xfav;
-    s.genre = g;
-    s.mood = m;
-
-    saveSongs();
-    render();
-  }
-
-  function addGenre(){
-    const g = normalize(newGenreInput.value);
-    if(!g) return;
-    if(genres.some(x => ci(x)===ci(g))){
-      alert("That genre already exists.");
-      return;
-    }
-    genres.push(g);
-    genres.sort((a,b)=>a.localeCompare(b));
-    saveGenres();
-    updateSelectOptions();
-    newGenreInput.value = "";
-    genreSelect.value = g;
-  }
-
-  function clearFilters(){
-    filters = { search:"", genre:"", mood:"", favOnly:false, xfavOnly:false };
-    searchInput.value = "";
-    genreFilter.value = "";
-    moodFilter.value = "";
-    favOnlyChip.classList.remove("on");
-    xfavOnlyChip.classList.remove("on");
-    render();
-  }
-
-  function exportData(){
+  // ======= Export / Import =======
+  function exportJSON(){
     const payload = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      songs,
-      genres
+      genres,
+      songs
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "my-music-list-export.json";
+    a.download = "my-songs-export.json";
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    toast("Exported JSON");
   }
 
-  async function importData(file){
-    try{
-      const text = await file.text();
-      const parsed = JSON.parse(text);
+  function importJSON(file){
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const data = JSON.parse(reader.result);
+        if(!data || !Array.isArray(data.songs)) throw new Error("Invalid file");
+        songs = data.songs.map(s=>({
+          id: s.id || crypto.randomUUID(),
+          artist: norm(s.artist),
+          title: norm(s.title),
+          genre: norm(s.genre||""),
+          mood: norm(s.mood||""),
+          fav: !!s.fav,
+          xfav: !!s.xfav,
+          createdAt: s.createdAt || Date.now()
+        })).filter(s=>s.artist && s.title);
 
-      if(!parsed || typeof parsed !== "object") throw new Error("Invalid file");
-      if(!Array.isArray(parsed.songs)) throw new Error("No songs array found");
-
-      // Basic sanitize
-      const incomingSongs = parsed.songs.map(s => ({
-        id: s.id || uid(),
-        artist: normalize(s.artist),
-        title: normalize(s.title),
-        genre: normalize(s.genre || ""),
-        mood: normalize(s.mood || ""),
-        favorite: !!s.favorite,
-        extraFavorite: !!s.extraFavorite,
-        createdAt: s.createdAt || Date.now()
-      })).filter(s => s.artist && s.title);
-
-      const incomingGenres = Array.isArray(parsed.genres) ? parsed.genres.map(normalize).filter(Boolean) : [];
-
-      // Merge songs without duplicates (artist+title)
-      const existingKey = new Set(songs.map(s => ci(s.artist)+"||"+ci(s.title)));
-      for(const s of incomingSongs){
-        const key = ci(s.artist)+"||"+ci(s.title);
-        if(!existingKey.has(key)){
-          songs.push(s);
-          existingKey.add(key);
+        if(Array.isArray(data.genres) && data.genres.length){
+          genres = [...new Set(data.genres.map(norm).filter(Boolean))];
+        } else {
+          genres = loadGenres();
         }
+
+        saveSongs(songs);
+        saveGenres(genres);
+        initSelects();
+        rebuildSuggestions();
+        render();
+        toast("Imported");
+      }catch(e){
+        console.error(e);
+        toast("Import failed");
+        alert("Import failed: file is not valid.");
       }
-
-      // Merge genres with defaults
-      genres = Array.from(new Set([...defaultGenres, ...genres, ...incomingGenres])).sort((a,b)=>a.localeCompare(b));
-
-      saveSongs();
-      saveGenres();
-      render();
-      alert("Import complete!");
-    }catch(err){
-      alert("Import failed. Make sure you selected a valid export .json file.");
-    }
+    };
+    reader.readAsText(file);
   }
 
-  // Events
-  toggleAddBtn.addEventListener("click", () => {
-    const showing = formWrap.classList.contains("show");
-    showForm(!showing);
+  // ======= Events =======
+  toggleAddBtn.addEventListener("click", ()=>{
+    addCard.style.display = (addCard.style.display === "none") ? "block" : "none";
+    if(addCard.style.display === "block") artistInput.focus();
   });
-  cancelAddBtn.addEventListener("click", () => showForm(false));
-  addSongBtn.addEventListener("click", addSong);
-  addGenreBtn.addEventListener("click", addGenre);
+  closeAddBtn.addEventListener("click", ()=> addCard.style.display = "none");
 
-  searchInput.addEventListener("input", (e)=>{ filters.search = e.target.value; render(); });
-  genreFilter.addEventListener("change", (e)=>{ filters.genre = e.target.value; render(); });
-  moodFilter.addEventListener("change", (e)=>{ filters.mood = e.target.value; render(); });
+  addBtn.addEventListener("click", addSong);
 
-  favOnlyChip.addEventListener("click", ()=>{
-    filters.favOnly = !filters.favOnly;
-    favOnlyChip.classList.toggle("on", filters.favOnly);
-    render();
-  });
-  xfavOnlyChip.addEventListener("click", ()=>{
-    filters.xfavOnly = !filters.xfavOnly;
-    xfavOnlyChip.classList.toggle("on", filters.xfavOnly);
-    render();
-  });
+  genreSelect.addEventListener("change", applyAddGenreUI);
 
-  clearFiltersBtn.addEventListener("click", clearFilters);
-
-  exportBtn.addEventListener("click", exportData);
-
-  importInput.addEventListener("change", (e)=>{
-    const file = e.target.files && e.target.files[0];
-    if(file) importData(file);
-    e.target.value = ""; // allow re-import same file
-  });
-
-  resetBtn.addEventListener("click", ()=>{
-    if(!confirm("This will delete EVERYTHING on this device. Continue?")) return;
-    songs = [];
-    genres = [...defaultGenres].sort((a,b)=>a.localeCompare(b));
-    saveSongs();
-    saveGenres();
+  addGenreBtn.addEventListener("click", ()=>{
+    const g = norm(newGenreInput.value);
+    if(!g){ toast("Type a genre"); return; }
+    const exists = genres.some(x=>x.toLowerCase() === g.toLowerCase());
+    if(!exists){
+      genres.push(g);
+      genres.sort(sortAZ);
+      saveGenres(genres);
+    }
+    initSelects();
+    genreSelect.value = g;
+    applyAddGenreUI();
+    newGenreInput.value = "";
+    toast("Genre added");
     render();
   });
 
-  // First render
-  lastSavedText.textContent = localStorage.getItem(STORAGE_KEY) ? ("Loaded: " + nowStamp()) : "No data yet.";
+  searchInput.addEventListener("input", render);
+  favFilter.addEventListener("change", render);
+  genreFilter.addEventListener("change", render);
+  moodFilter.addEventListener("change", render);
+
+  resetFilters.addEventListener("click", ()=>{
+    searchInput.value = "";
+    favFilter.value = "all";
+    genreFilter.value = "any";
+    moodFilter.value = "any";
+    render();
+    toast("Filters reset");
+  });
+
+  exportBtn.addEventListener("click", exportJSON);
+
+  importFile.addEventListener("change", (e)=>{
+    const f = e.target.files?.[0];
+    if(f) importJSON(f);
+    importFile.value = "";
+  });
+
+  clearBtn.addEventListener("click", ()=>{
+    if(confirm("Clear songs on THIS device only?")){
+      songs = [];
+      saveSongs(songs);
+      toast("Cleared");
+      rebuildSuggestions();
+      render();
+    }
+  });
+
+  // ======= Init =======
+  initSelects();
+  applyAddGenreUI();
+  rebuildSuggestions();
   render();
-})();
 </script>
 </body>
 </html>
