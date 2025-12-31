@@ -1,720 +1,709 @@
 <!doctype html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0b0b0c" />
-  <title>My Songs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Songs List</title>
   <style>
     :root{
-      --bg:#0b0b0c; --card:#141417; --muted:#a6a6ad; --text:#f2f2f4;
-      --line:#232329; --accent:#7aa2ff; --good:#39d98a; --warn:#ffcc66;
+      --bg:#0b0c10; --card:#12131a; --muted:#a7adbb; --text:#eef1f6;
+      --line:#222433; --accent:#7aa2ff; --good:#38d39f; --warn:#ffcc66;
+      --bad:#ff6b6b;
     }
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
     body{
-      margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background:var(--bg); color:var(--text);
     }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 14px; }
     header{
-      position:sticky; top:0; z-index:10;
-      background:linear-gradient(180deg, rgba(11,11,12,0.98), rgba(11,11,12,0.92));
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(11,12,16,.92);
       backdrop-filter: blur(10px);
-      border-bottom:1px solid var(--line);
-      padding:14px 14px 10px;
+      border-bottom: 1px solid var(--line);
     }
-    .titleRow{display:flex; align-items:center; justify-content:space-between; gap:10px}
-    h1{font-size:18px; margin:0; font-weight:700; letter-spacing:0.2px}
-    .sub{margin-top:4px; font-size:12px; color:var(--muted)}
-    .actions{display:flex; gap:8px; align-items:center}
-    button{
-      border:1px solid var(--line);
-      background:var(--card);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      font-weight:650;
-      font-size:14px;
-      cursor:pointer;
+    header .wrap{ padding-top: 10px; padding-bottom: 10px; }
+    h1{ font-size: 18px; margin: 0 0 10px; letter-spacing:.2px; }
+    .bar{
+      display:grid; gap:10px;
+      grid-template-columns: 1fr;
     }
-    button.primary{border-color:transparent; background:var(--accent); color:#0b0b0c}
-    button.ghost{background:transparent}
-    button:active{transform:scale(0.99)}
-    .controls{
-      display:grid; gap:10px; margin-top:10px;
+    @media (min-width: 720px){
+      .bar{ grid-template-columns: 1.2fr .8fr .8fr auto; align-items: end; }
     }
-    .row{display:flex; gap:10px; align-items:center}
-    input[type="search"], select{
+    label{ display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input, select, button{
       width:100%;
-      border:1px solid var(--line);
-      background:var(--card);
-      color:var(--text);
-      padding:12px 12px;
-      border-radius:12px;
-      font-size:14px;
-      outline:none;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 14px;
+      outline: none;
     }
-    .chips{display:flex; gap:8px; flex-wrap:wrap}
-    .chip{
-      border:1px solid var(--line);
-      background:transparent;
-      color:var(--muted);
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:13px;
+    input::placeholder{ color: #6e7688; }
+    button{
       cursor:pointer;
-      user-select:none;
+      background: linear-gradient(180deg, #1b1d2a, #12131a);
+      border: 1px solid #2a2d40;
     }
-    .chip.active{background:var(--card); color:var(--text); border-color:#2e2e38}
-    main{padding:14px; padding-bottom:90px}
-    .artistCard{
-      border:1px solid var(--line);
-      background:var(--card);
-      border-radius:16px;
-      padding:12px;
-      margin-bottom:12px;
+    button.primary{
+      background: linear-gradient(180deg, #2a4bff, #1c2bb8);
+      border: 1px solid rgba(122,162,255,.55);
     }
-    .artistTop{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-      margin-bottom:8px;
+    button.ghost{
+      background: transparent;
+      border: 1px solid var(--line);
     }
-    .artistName{
-      font-size:16px; font-weight:750; margin:0; line-height:1.2;
-      word-break:break-word;
+    .row{
+      display:flex; gap:10px; flex-wrap: wrap;
+      margin-top: 10px;
     }
-    .artistMeta{font-size:12px; color:var(--muted); margin-top:3px}
     .pill{
-      font-size:12px; padding:6px 8px; border-radius:999px; border:1px solid var(--line);
-      color:var(--muted);
-      white-space:nowrap;
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 10px; border: 1px solid var(--line);
+      border-radius: 999px; color: var(--muted); font-size: 12px;
+      background: rgba(18,19,26,.6);
     }
-    .songList{display:flex; flex-direction:column; gap:8px}
-    .songItem{
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:10px 10px;
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-      background:#101013;
+    .pill b{ color: var(--text); font-weight: 600; }
+    main{ padding-top: 12px; }
+    .artistBlock{ margin: 14px 0; }
+    .artistHeader{
+      display:flex; align-items: baseline; justify-content: space-between;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: rgba(18,19,26,.7);
+      border-radius: 14px;
+      gap: 12px;
     }
-    .left{min-width:0}
+    .artistHeader .left{
+      display:flex; flex-direction: column; gap: 2px;
+      min-width: 0;
+    }
+    .artistHeader .name{
+      font-size: 15px; font-weight: 700; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .artistHeader .meta{
+      color: var(--muted); font-size: 12px;
+    }
+    .songs{
+      margin-top: 10px;
+      display:flex; flex-direction: column; gap: 10px;
+    }
+    .songCard{
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 16px;
+      padding: 12px;
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
     .songTitle{
-      margin:0; font-weight:720; font-size:14px; line-height:1.25;
-      word-break:break-word;
+      font-size: 14px; font-weight: 700; margin: 0 0 6px;
+      word-break: break-word;
     }
     .songMeta{
-      margin-top:4px; font-size:12px; color:var(--muted);
-      display:flex; gap:8px; flex-wrap:wrap;
+      color: var(--muted); font-size: 12px;
+      display:flex; flex-wrap: wrap; gap: 8px;
     }
     .tag{
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:4px 8px;
-      font-size:12px;
-      color:var(--muted);
+      border: 1px solid var(--line);
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.03);
     }
-    .tag.fav{border-color:rgba(255,204,102,0.35); color:var(--warn)}
-    .tag.xfav{border-color:rgba(57,217,138,0.35); color:var(--good)}
-    .right{display:flex; gap:6px}
+    .tag.fav{ border-color: rgba(56,211,159,.35); color: #bff6e5; }
+    .tag.xfav{ border-color: rgba(255,204,102,.45); color: #ffe6b3; }
+    .actions{
+      display:flex; gap: 8px; align-items: start;
+    }
     .iconBtn{
-      width:38px; height:38px; border-radius:12px;
-      display:grid; place-items:center;
-      border:1px solid var(--line);
-      background:transparent; color:var(--text);
-      cursor:pointer;
-      flex:0 0 auto;
+      width:auto; padding: 10px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      white-space: nowrap;
     }
-    .muted{color:var(--muted)}
-    .empty{
-      border:1px dashed var(--line);
-      border-radius:16px;
-      padding:16px;
-      color:var(--muted);
-    }
+    .muted{ color: var(--muted); }
+    .divider{ height: 1px; background: var(--line); margin: 14px 0; opacity: .8; }
 
-    /* Modal */
-    .modalOverlay{
-      position:fixed; inset:0; background:rgba(0,0,0,0.6);
-      display:none; align-items:flex-end; justify-content:center;
-      padding:12px;
-      z-index:50;
+    /* modal */
+    .modalWrap{
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      display:none; align-items: center; justify-content: center;
+      padding: 14px; z-index: 50;
     }
     .modal{
-      width:min(680px, 100%);
-      border:1px solid var(--line);
-      background:var(--card);
-      border-radius:18px;
-      padding:12px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      width: min(620px, 100%);
+      border-radius: 18px;
+      background: #0f1017;
+      border: 1px solid #2a2d40;
+      padding: 14px;
     }
-    .modalHeader{
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
-      padding:6px 6px 10px;
+    .modal h2{ margin: 0 0 10px; font-size: 16px; }
+    .grid2{
+      display:grid; grid-template-columns: 1fr;
+      gap: 10px;
     }
-    .modalHeader h2{margin:0; font-size:16px}
-    .grid{
-      display:grid;
-      gap:10px;
+    @media (min-width: 720px){
+      .grid2{ grid-template-columns: 1fr 1fr; }
     }
-    label{font-size:12px; color:var(--muted); display:block; margin:0 0 6px 2px}
-    .field{display:flex; flex-direction:column}
-    .twoCol{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-    @media (max-width:520px){ .twoCol{grid-template-columns:1fr} }
-    .toggleRow{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .toggleRow{
+      display:flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      margin-top: 8px;
+    }
     .toggle{
       display:flex; align-items:center; gap:8px;
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:10px 12px;
-      background:#101013;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(18,19,26,.6);
+      width: fit-content;
     }
-    .toggle input{width:18px; height:18px}
-    .footerBar{
-      position:fixed; left:0; right:0; bottom:0;
-      border-top:1px solid var(--line);
-      background:rgba(11,11,12,0.9);
-      backdrop-filter: blur(12px);
-      padding:12px 14px;
-      display:flex; justify-content:space-between; gap:10px;
+    .toggle input{ width:auto; }
+    .footerBtns{ display:flex; gap:10px; margin-top: 12px; }
+    .small{ font-size: 12px; }
+    .danger{ border-color: rgba(255,107,107,.35) !important; color: #ffd1d1; }
+    details{
+      border:1px solid var(--line); border-radius: 14px;
+      padding: 10px 12px; background: rgba(18,19,26,.55);
     }
-    .footerBar .small{font-size:12px; color:var(--muted); line-height:1.2}
-    a.link{color:var(--accent); text-decoration:none}
+    summary{ cursor:pointer; color: var(--muted); }
+    .settingsGrid{
+      display:grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px;
+    }
+    @media (min-width: 720px){
+      .settingsGrid{ grid-template-columns: 1fr 1fr; }
+    }
+    .hint{ color: var(--muted); font-size: 12px; line-height: 1.35; }
+    a{ color: var(--accent); }
   </style>
 </head>
+
 <body>
   <header>
-    <div class="titleRow">
-      <div>
-        <h1>My Songs</h1>
-        <div class="sub" id="stats">Loading…</div>
-      </div>
-      <div class="actions">
-        <button class="ghost" id="syncBtn" title="Optional: sync with GitHub Gist">Sync</button>
-        <button class="primary" id="addBtn">+ Add</button>
-      </div>
-    </div>
+    <div class="wrap">
+      <h1>My Songs</h1>
 
-    <div class="controls">
-      <input id="q" type="search" placeholder="Search song or artist…" autocomplete="off" />
+      <div class="bar">
+        <div>
+          <label>Search</label>
+          <input id="q" placeholder="Search song or artist…" autocomplete="off" />
+        </div>
+        <div>
+          <label>Filter mood</label>
+          <select id="filterMood"></select>
+        </div>
+        <div>
+          <label>Filter genre</label>
+          <select id="filterGenre"></select>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="primary" id="btnAdd">+ Add song</button>
+        </div>
+      </div>
+
       <div class="row">
-        <select id="moodFilter">
-          <option value="">All moods</option>
-        </select>
-        <select id="favFilter">
-          <option value="">All</option>
-          <option value="fav">Favorites</option>
-          <option value="xfav">Extra favorites</option>
-        </select>
+        <span class="pill">Artists: <b id="statArtists">0</b></span>
+        <span class="pill">Songs: <b id="statSongs">0</b></span>
+        <span class="pill">Favorites: <b id="statFav">0</b></span>
+        <span class="pill">Extra favorites: <b id="statXFav">0</b></span>
+        <button class="ghost iconBtn" id="btnFavOnly">Show favorites</button>
+        <button class="ghost iconBtn" id="btnReset">Reset filters</button>
       </div>
-      <div class="chips" id="chips">
-        <div class="chip active" data-chip="all">All</div>
-        <div class="chip" data-chip="fav">Fav</div>
-        <div class="chip" data-chip="xfav">Extra</div>
-      </div>
+
+      <div class="divider"></div>
+
+      <details>
+        <summary>Sync (optional): use GitHub Gist for multi-device</summary>
+        <div class="settingsGrid">
+          <div>
+            <label>GitHub Gist ID</label>
+            <input id="gistId" placeholder="e.g. a1b2c3d4e5f6…" />
+            <div class="hint">Maak 1 private Gist met een bestand <b>songs.json</b> (mag leeg). Plak hier de Gist ID.</div>
+          </div>
+          <div>
+            <label>GitHub Token (fine-grained)</label>
+            <input id="ghToken" placeholder="ghp_… of github_pat_…" />
+            <div class="hint">Bewaar dit privé. Gebruik een token met alleen Gist read/write. Dit wordt lokaal opgeslagen op je device.</div>
+          </div>
+        </div>
+        <div class="footerBtns">
+          <button class="ghost" id="btnLoadGist">Load from Gist</button>
+          <button class="ghost" id="btnSaveGist">Save to Gist</button>
+          <button class="ghost danger" id="btnClearLocal">Clear local data</button>
+        </div>
+        <div class="hint small" style="margin-top:8px">
+          Zonder Gist-sync: data staat alleen op dit apparaat (localStorage).
+        </div>
+      </details>
     </div>
   </header>
 
-  <main id="list"></main>
+  <main class="wrap" id="list"></main>
 
   <!-- Modal -->
-  <div class="modalOverlay" id="overlay" role="dialog" aria-modal="true">
+  <div class="modalWrap" id="modalWrap">
     <div class="modal">
-      <div class="modalHeader">
-        <h2 id="modalTitle">Add Song</h2>
-        <button class="ghost" id="closeBtn">Close</button>
-      </div>
+      <h2 id="modalTitle">Add song</h2>
 
-      <div class="grid">
-        <div class="field">
+      <div class="grid2">
+        <div>
           <label>Artist</label>
-          <input id="artistInput" type="search" placeholder="e.g. Radiohead" />
+          <input id="inArtist" placeholder="Artist name" />
         </div>
+        <div>
+          <label>Song title</label>
+          <input id="inTitle" placeholder="Song title" />
+        </div>
+        <div>
+          <label>Mood</label>
+          <select id="inMood"></select>
+        </div>
+        <div>
+          <label>Genre</label>
+          <select id="inGenre"></select>
+        </div>
+      </div>
 
-        <div class="field">
-          <label>Song Title</label>
-          <input id="titleInput" type="search" placeholder="e.g. Karma Police" />
-        </div>
+      <div class="toggleRow">
+        <label class="toggle"><input type="checkbox" id="inFav" /> Favorite</label>
+        <label class="toggle"><input type="checkbox" id="inXFav" /> Extra favorite</label>
+      </div>
 
-        <div class="twoCol">
-          <div class="field">
-            <label>Mood</label>
-            <select id="moodInput"></select>
-          </div>
-          <div class="field">
-            <label>Year (optional)</label>
-            <input id="yearInput" inputmode="numeric" placeholder="e.g. 2016" />
-          </div>
-        </div>
+      <div class="footerBtns">
+        <button class="primary" id="btnSave">Save</button>
+        <button class="ghost" id="btnCancel">Cancel</button>
+        <button class="ghost danger" id="btnDelete" style="margin-left:auto; display:none;">Delete</button>
+      </div>
 
-        <div class="toggleRow">
-          <label style="width:100%">Flags</label>
-          <div class="toggle"><input id="favInput" type="checkbox" /> <span>Favorite</span></div>
-          <div class="toggle"><input id="xfavInput" type="checkbox" /> <span>Extra favorite</span></div>
-        </div>
-
-        <div class="row" style="justify-content:flex-end; gap:10px; margin-top:6px">
-          <button id="deleteBtn" class="ghost" style="display:none">Delete</button>
-          <button id="saveBtn" class="primary">Save</button>
-        </div>
-
-        <div class="sub">
-          Tip: keep it minimal. You can always add details later.
-        </div>
+      <div class="hint small" style="margin-top:10px">
+        Tip: Zet “Artist – Song Title” in je muziekhistorie? Je kunt hier ook snel copy-pasten en daarna aanpassen.
       </div>
     </div>
   </div>
 
-  <div class="footerBar">
-    <div class="small">
-      Vertical-only layout ✅<br/>
-      Data saved locally. Use <b>Sync</b> if you want multi-device.
-    </div>
-    <button class="ghost" id="exportBtn">Export</button>
-  </div>
+  <script>
+    // ====== Presets (dropdown options) ======
+    const MOODS = ["Any", "Happy", "Sad", "Energized", "Calm", "Instrumental"];
+    const GENRES = ["Any", "Pop", "Hip-Hop", "Rock", "EDM", "R&B", "Jazz", "Classical", "Indie", "Metal", "Folk", "Other"];
 
-<script>
-(() => {
-  // ---------- Data model ----------
-  // song: { id, artist, title, mood, year, fav, xfav, createdAt }
-  const LS_KEY = "mySongs.v1";
-  const LS_SYNC = "mySongs.sync.v1"; // { gistId, token }
-  const DEFAULT_MOODS = ["", "Happy", "Chill", "Sad", "Angry", "Focus", "Workout", "Party", "Romantic", "Nostalgic", "Calm", "Hype"];
+    // ====== Storage keys ======
+    const LS_KEY = "mySongs.v1";
+    const LS_SYNC = "mySongs.sync.v1";
 
-  let songs = loadLocal();
-  let editingId = null;
+    // ====== State ======
+    let songs = [];
+    let favOnly = false;
+    let editingId = null;
 
-  // ---------- Elements ----------
-  const $ = (id) => document.getElementById(id);
-  const listEl = $("list");
-  const statsEl = $("stats");
-  const qEl = $("q");
-  const moodFilterEl = $("moodFilter");
-  const favFilterEl = $("favFilter");
-  const chipsEl = $("chips");
+    // ====== Helpers ======
+    const $ = (id) => document.getElementById(id);
+    const norm = (s) => (s || "").toString().trim();
+    const key = (s) => norm(s).toLowerCase();
 
-  const overlay = $("overlay");
-  const modalTitle = $("modalTitle");
-  const artistInput = $("artistInput");
-  const titleInput = $("titleInput");
-  const moodInput = $("moodInput");
-  const yearInput = $("yearInput");
-  const favInput = $("favInput");
-  const xfavInput = $("xfavInput");
-  const deleteBtn = $("deleteBtn");
-
-  // ---------- Init moods ----------
-  function buildMoodSelects() {
-    const moods = Array.from(new Set(DEFAULT_MOODS.concat(songs.map(s => s.mood || "").filter(Boolean))));
-    // modal
-    moodInput.innerHTML = "";
-    moods.forEach(m => {
-      const opt = document.createElement("option");
-      opt.value = m;
-      opt.textContent = m === "" ? "—" : m;
-      moodInput.appendChild(opt);
-    });
-    // filter
-    moodFilterEl.innerHTML = "";
-    const allOpt = document.createElement("option");
-    allOpt.value = "";
-    allOpt.textContent = "All moods";
-    moodFilterEl.appendChild(allOpt);
-    moods.filter(Boolean).forEach(m => {
-      const opt = document.createElement("option");
-      opt.value = m;
-      opt.textContent = m;
-      moodFilterEl.appendChild(opt);
-    });
-  }
-
-  // ---------- Local storage ----------
-  function loadLocal() {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (!raw) return [];
-      const arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr : [];
-    } catch {
-      return [];
-    }
-  }
-  function saveLocal() {
-    localStorage.setItem(LS_KEY, JSON.stringify(songs));
-  }
-
-  // ---------- Sorting & grouping ----------
-  function norm(s){ return (s||"").trim().toLowerCase(); }
-
-  function getFilteredSongs() {
-    const q = norm(qEl.value);
-    const mood = moodFilterEl.value;
-    const favFilter = favFilterEl.value; // "", "fav", "xfav"
-    const chip = chipsEl.querySelector(".chip.active")?.dataset.chip || "all";
-
-    return songs.filter(s => {
-      const matchQ = !q || norm(s.artist).includes(q) || norm(s.title).includes(q);
-      const matchMood = !mood || (s.mood === mood);
-      const matchFavDrop =
-        !favFilter ||
-        (favFilter === "fav" && !!s.fav) ||
-        (favFilter === "xfav" && !!s.xfav);
-
-      const matchChip =
-        chip === "all" ||
-        (chip === "fav" && !!s.fav) ||
-        (chip === "xfav" && !!s.xfav);
-
-      return matchQ && matchMood && matchFavDrop && matchChip;
-    });
-  }
-
-  function groupByArtist(list) {
-    // sort artists A-Z; songs within artist A-Z
-    const sorted = [...list].sort((a,b) => {
-      const aa = norm(a.artist), bb = norm(b.artist);
-      if (aa !== bb) return aa < bb ? -1 : 1;
-      const at = norm(a.title), bt = norm(b.title);
-      if (at !== bt) return at < bt ? -1 : 1;
-      return (a.createdAt||0) - (b.createdAt||0);
-    });
-
-    const map = new Map();
-    for (const s of sorted) {
-      const key = (s.artist || "Unknown Artist").trim();
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(s);
-    }
-    const artists = Array.from(map.keys()).sort((a,b)=> norm(a) < norm(b) ? -1 : 1);
-    return artists.map(a => ({ artist: a, songs: map.get(a) }));
-  }
-
-  // ---------- Rendering ----------
-  function render() {
-    buildMoodSelects();
-
-    const filtered = getFilteredSongs();
-    const grouped = groupByArtist(filtered);
-
-    // global stats based on ALL songs (not filtered)
-    const totalSongs = songs.length;
-    const uniqueArtists = new Set(songs.map(s => (s.artist||"Unknown Artist").trim())).size;
-    const favCount = songs.filter(s => s.fav).length;
-    const xfavCount = songs.filter(s => s.xfav).length;
-    statsEl.textContent = `${totalSongs} songs • ${uniqueArtists} artists • ${favCount} fav • ${xfavCount} extra`;
-
-    // If nothing
-    if (grouped.length === 0) {
-      listEl.innerHTML = `
-        <div class="empty">
-          No results. Try a different search or filter.<br/><br/>
-          Tap <b>+ Add</b> to add your first song.
-        </div>`;
-      return;
+    function uid(){
+      return Math.random().toString(16).slice(2) + Date.now().toString(16);
     }
 
-    // Build global index map (over ALL songs, sorted by artist/title)
-    const globalSortedAll = groupByArtist(songs)
-      .flatMap(g => g.songs);
-    const globalIndex = new Map(globalSortedAll.map((s, i) => [s.id, i+1]));
-
-    // Render grouped cards
-    listEl.innerHTML = "";
-    grouped.forEach((group, artistIdx) => {
-      const card = document.createElement("div");
-      card.className = "artistCard";
-
-      // artist numbering is within filtered view (so feels consistent while browsing)
-      const artistNumber = artistIdx + 1;
-      const songCount = group.songs.length;
-
-      const top = document.createElement("div");
-      top.className = "artistTop";
-      top.innerHTML = `
-        <div style="min-width:0">
-          <p class="artistName">#${artistNumber} ${escapeHtml(group.artist)}</p>
-          <div class="artistMeta">${songCount} song${songCount===1?"":"s"}</div>
-        </div>
-        <div class="pill">A–Z</div>
-      `;
-      card.appendChild(top);
-
-      const list = document.createElement("div");
-      list.className = "songList";
-
-      group.songs.forEach((s, withinArtistIdx) => {
-        const globalNo = globalIndex.get(s.id) ?? "?";
-        const withinArtistNo = withinArtistIdx + 1;
-
-        const item = document.createElement("div");
-        item.className = "songItem";
-
-        const moodTag = s.mood ? `<span class="tag">${escapeHtml(s.mood)}</span>` : "";
-        const yearTag = s.year ? `<span class="tag">${escapeHtml(String(s.year))}</span>` : "";
-        const favTag = s.fav ? `<span class="tag fav">★ Fav</span>` : "";
-        const xfavTag = s.xfav ? `<span class="tag xfav">✦ Extra</span>` : "";
-
-        item.innerHTML = `
-          <div class="left">
-            <p class="songTitle">#${globalNo} • ${escapeHtml(s.title || "Untitled")}</p>
-            <div class="songMeta">
-              <span class="tag">Artist-song #${withinArtistNo}</span>
-              ${favTag}${xfavTag}${moodTag}${yearTag}
-            </div>
-          </div>
-          <div class="right">
-            <button class="iconBtn" title="Edit">✎</button>
-          </div>
-        `;
-        item.querySelector("button").addEventListener("click", () => openEdit(s.id));
-        list.appendChild(item);
-      });
-
-      card.appendChild(list);
-      listEl.appendChild(card);
-    });
-  }
-
-  // ---------- Modal controls ----------
-  function openAdd() {
-    editingId = null;
-    modalTitle.textContent = "Add Song";
-    artistInput.value = "";
-    titleInput.value = "";
-    moodInput.value = "";
-    yearInput.value = "";
-    favInput.checked = false;
-    xfavInput.checked = false;
-    deleteBtn.style.display = "none";
-    overlay.style.display = "flex";
-    setTimeout(() => artistInput.focus(), 50);
-  }
-
-  function openEdit(id) {
-    const s = songs.find(x => x.id === id);
-    if (!s) return;
-    editingId = id;
-    modalTitle.textContent = "Edit Song";
-    artistInput.value = s.artist || "";
-    titleInput.value = s.title || "";
-    moodInput.value = s.mood || "";
-    yearInput.value = s.year ? String(s.year) : "";
-    favInput.checked = !!s.fav;
-    xfavInput.checked = !!s.xfav;
-    deleteBtn.style.display = "inline-block";
-    overlay.style.display = "flex";
-  }
-
-  function closeModal() {
-    overlay.style.display = "none";
-  }
-
-  function saveFromModal() {
-    const artist = artistInput.value.trim();
-    const title = titleInput.value.trim();
-    const mood = moodInput.value || "";
-    const yearRaw = yearInput.value.trim();
-    const year = yearRaw ? Number(yearRaw) : null;
-
-    if (!artist || !title) {
-      alert("Please enter both Artist and Song Title.");
-      return;
-    }
-    if (yearRaw && (!Number.isFinite(year) || year < 0 || year > 3000)) {
-      alert("Year must be a valid number.");
-      return;
-    }
-
-    if (editingId) {
-      const idx = songs.findIndex(s => s.id === editingId);
-      if (idx >= 0) {
-        songs[idx] = {
-          ...songs[idx],
-          artist, title, mood,
-          year: yearRaw ? year : null,
-          fav: favInput.checked,
-          xfav: xfavInput.checked,
-        };
+    function fillSelect(sel, options){
+      sel.innerHTML = "";
+      for(const opt of options){
+        const o = document.createElement("option");
+        o.value = opt === "Any" ? "" : opt;
+        o.textContent = opt;
+        sel.appendChild(o);
       }
-    } else {
-      songs.push({
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
-        artist, title, mood,
-        year: yearRaw ? year : null,
-        fav: favInput.checked,
-        xfav: xfavInput.checked,
-        createdAt: Date.now(),
+    }
+
+    function loadLocal(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        songs = raw ? JSON.parse(raw) : [];
+      }catch(e){
+        songs = [];
+      }
+    }
+    function saveLocal(){
+      localStorage.setItem(LS_KEY, JSON.stringify(songs));
+    }
+
+    function loadSyncSettings(){
+      try{
+        const raw = localStorage.getItem(LS_SYNC);
+        const s = raw ? JSON.parse(raw) : {};
+        $("gistId").value = s.gistId || "";
+        $("ghToken").value = s.ghToken || "";
+      }catch(e){}
+    }
+    function saveSyncSettings(){
+      localStorage.setItem(LS_SYNC, JSON.stringify({
+        gistId: $("gistId").value.trim(),
+        ghToken: $("ghToken").value.trim()
+      }));
+    }
+
+    function sortSongs(arr){
+      return [...arr].sort((a,b)=>{
+        const A = key(a.artist), B = key(b.artist);
+        if(A !== B) return A.localeCompare(B);
+        return key(a.title).localeCompare(key(b.title));
       });
     }
 
-    saveLocal();
-    closeModal();
-    render();
-  }
-
-  function deleteCurrent() {
-    if (!editingId) return;
-    if (!confirm("Delete this song?")) return;
-    songs = songs.filter(s => s.id !== editingId);
-    saveLocal();
-    closeModal();
-    render();
-  }
-
-  // ---------- Export ----------
-  function exportJson() {
-    const blob = new Blob([JSON.stringify(songs, null, 2)], {type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "mySongs.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  // ---------- Optional: GitHub Gist Sync ----------
-  // This lets you sync across devices. You need:
-  // - a GitHub Personal Access Token (classic) with "gist" scope
-  // - a gist ID (or create one from the app)
-  async function syncFlow() {
-    const existing = loadSyncConfig();
-    let token = existing?.token || prompt("GitHub token (classic) with 'gist' scope.\nIt will be stored on this device only.");
-    if (!token) return;
-
-    let gistId = existing?.gistId || prompt("Gist ID (leave empty to create a new Gist)");
-    if (!gistId) {
-      gistId = await createGist(token);
-      if (!gistId) return;
-      alert("Created a new Gist! Now syncing to it.");
+    function getUniqueArtists(arr){
+      const set = new Set(arr.map(s => norm(s.artist)).filter(Boolean));
+      return [...set].sort((a,b)=> key(a).localeCompare(key(b)));
     }
 
-    // choose direction
-    const choice = prompt("Type:\nPUSH = upload your current songs to Gist\nPULL = download from Gist to this device", "PUSH");
-    if (!choice) return;
+    // ====== Rendering ======
+    function render(){
+      const q = key($("q").value);
+      const fm = $("filterMood").value;
+      const fg = $("filterGenre").value;
 
-    saveSyncConfig({ token, gistId });
+      let filtered = songs;
 
-    if (choice.toUpperCase() === "PULL") {
-      const remote = await pullFromGist(token, gistId);
-      if (remote) {
-        songs = remote;
+      if(q){
+        filtered = filtered.filter(s =>
+          key(s.artist).includes(q) || key(s.title).includes(q)
+        );
+      }
+      if(fm){
+        filtered = filtered.filter(s => s.mood === fm);
+      }
+      if(fg){
+        filtered = filtered.filter(s => s.genre === fg);
+      }
+      if(favOnly){
+        filtered = filtered.filter(s => s.fav || s.xfav);
+      }
+
+      const sorted = sortSongs(filtered);
+
+      // stats (based on ALL songs, not filtered)
+      const allArtists = getUniqueArtists(songs);
+      $("statArtists").textContent = allArtists.length.toString();
+      $("statSongs").textContent = songs.length.toString();
+      $("statFav").textContent = songs.filter(s=>!!s.fav).length.toString();
+      $("statXFav").textContent = songs.filter(s=>!!s.xfav).length.toString();
+
+      // group by artist
+      const byArtist = new Map();
+      for(const s of sorted){
+        const a = norm(s.artist) || "Unknown artist";
+        if(!byArtist.has(a)) byArtist.set(a, []);
+        byArtist.get(a).push(s);
+      }
+
+      // Artist numbering based on ALL artists (global list)
+      const artistIndex = new Map();
+      allArtists.forEach((a,i)=> artistIndex.set(a, i+1));
+
+      // Global song numbering across ALL songs sorted
+      const globalSortedAll = sortSongs(songs);
+      const globalSongNo = new Map();
+      globalSortedAll.forEach((s,i)=> globalSongNo.set(s.id, i+1));
+
+      const root = $("list");
+      root.innerHTML = "";
+
+      if(sorted.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "muted";
+        empty.style.padding = "10px 2px";
+        empty.textContent = "No songs match your filters yet. Tap “Add song”.";
+        root.appendChild(empty);
+        return;
+      }
+
+      // artist blocks in A–Z
+      const artistNames = [...byArtist.keys()].sort((a,b)=> key(a).localeCompare(key(b)));
+      for(const artistName of artistNames){
+        const list = byArtist.get(artistName);
+        const block = document.createElement("div");
+        block.className = "artistBlock";
+
+        const h = document.createElement("div");
+        h.className = "artistHeader";
+
+        const left = document.createElement("div");
+        left.className = "left";
+
+        const aNo = artistIndex.get(artistName) || null;
+
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = aNo ? `#${aNo} ${artistName}` : artistName;
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.textContent = `${list.length} song${list.length===1?"":"s"}`;
+
+        left.appendChild(name);
+        left.appendChild(meta);
+
+        const right = document.createElement("div");
+        right.className = "meta";
+        right.textContent = "";
+
+        h.appendChild(left);
+        h.appendChild(right);
+
+        const songsDiv = document.createElement("div");
+        songsDiv.className = "songs";
+
+        list.forEach((s, idx)=>{
+          const card = document.createElement("div");
+          card.className = "songCard";
+
+          const main = document.createElement("div");
+
+          const title = document.createElement("div");
+          title.className = "songTitle";
+
+          // show global song number and per-artist number
+          const gNo = globalSongNo.get(s.id) || "";
+          const perArtistNo = idx + 1;
+          title.textContent = `Song #${gNo} · ${perArtistNo}. ${s.title}`;
+
+          const meta = document.createElement("div");
+          meta.className = "songMeta";
+
+          if(s.mood) meta.appendChild(tagEl(`Mood: ${s.mood}`));
+          if(s.genre) meta.appendChild(tagEl(`Genre: ${s.genre}`));
+          if(s.fav) meta.appendChild(tagEl("Favorite", "fav"));
+          if(s.xfav) meta.appendChild(tagEl("Extra favorite", "xfav"));
+
+          main.appendChild(title);
+          main.appendChild(meta);
+
+          const actions = document.createElement("div");
+          actions.className = "actions";
+
+          const btnEdit = document.createElement("button");
+          btnEdit.className = "iconBtn";
+          btnEdit.textContent = "Edit";
+          btnEdit.onclick = ()=> openModal(s.id);
+
+          actions.appendChild(btnEdit);
+
+          card.appendChild(main);
+          card.appendChild(actions);
+
+          songsDiv.appendChild(card);
+        });
+
+        block.appendChild(h);
+        block.appendChild(songsDiv);
+        root.appendChild(block);
+      }
+    }
+
+    function tagEl(text, cls=""){
+      const t = document.createElement("span");
+      t.className = "tag " + cls;
+      t.textContent = text;
+      return t;
+    }
+
+    // ====== Modal Add/Edit ======
+    function openModal(id=null){
+      editingId = id;
+      $("modalWrap").style.display = "flex";
+      $("btnDelete").style.display = id ? "inline-block" : "none";
+      $("modalTitle").textContent = id ? "Edit song" : "Add song";
+
+      if(id){
+        const s = songs.find(x=>x.id===id);
+        $("inArtist").value = s?.artist || "";
+        $("inTitle").value = s?.title || "";
+        $("inMood").value = s?.mood || "";
+        $("inGenre").value = s?.genre || "";
+        $("inFav").checked = !!s?.fav;
+        $("inXFav").checked = !!s?.xfav;
+      }else{
+        $("inArtist").value = "";
+        $("inTitle").value = "";
+        $("inMood").value = "";
+        $("inGenre").value = "";
+        $("inFav").checked = false;
+        $("inXFav").checked = false;
+      }
+
+      // focus first field
+      setTimeout(()=> $("inArtist").focus(), 50);
+    }
+
+    function closeModal(){
+      $("modalWrap").style.display = "none";
+      editingId = null;
+    }
+
+    function upsertSong(){
+      const artist = norm($("inArtist").value);
+      const title = norm($("inTitle").value);
+      const mood = $("inMood").value || "";
+      const genre = $("inGenre").value || "";
+      const fav = $("inFav").checked;
+      const xfav = $("inXFav").checked;
+
+      if(!artist || !title){
+        alert("Please enter both Artist and Song Title.");
+        return;
+      }
+
+      if(editingId){
+        const idx = songs.findIndex(s=>s.id===editingId);
+        if(idx >= 0){
+          songs[idx] = { ...songs[idx], artist, title, mood, genre, fav, xfav };
+        }
+      }else{
+        songs.push({ id: uid(), artist, title, mood, genre, fav, xfav, createdAt: Date.now() });
+      }
+
+      saveLocal();
+      closeModal();
+      render();
+    }
+
+    function deleteSong(){
+      if(!editingId) return;
+      const ok = confirm("Delete this song?");
+      if(!ok) return;
+      songs = songs.filter(s=>s.id!==editingId);
+      saveLocal();
+      closeModal();
+      render();
+    }
+
+    // ====== GitHub Gist Sync (optional) ======
+    async function loadFromGist(){
+      saveSyncSettings();
+      const gistId = $("gistId").value.trim();
+      const token = $("ghToken").value.trim();
+      if(!gistId || !token){
+        alert("Fill in both Gist ID and GitHub token first.");
+        return;
+      }
+
+      const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+        headers: { "Authorization": `token ${token}` }
+      });
+
+      if(!res.ok){
+        alert("Could not load gist. Check Gist ID / token.");
+        return;
+      }
+
+      const data = await res.json();
+      const file = data.files && (data.files["songs.json"] || Object.values(data.files)[0]);
+      if(!file || typeof file.content !== "string"){
+        alert("No songs.json found in that gist.");
+        return;
+      }
+
+      try{
+        const parsed = JSON.parse(file.content || "[]");
+        if(!Array.isArray(parsed)) throw new Error("not array");
+        songs = parsed;
         saveLocal();
         render();
-        alert("Pulled from Gist ✅");
+        alert("Loaded from Gist ✅");
+      }catch(e){
+        alert("Gist file content is not valid JSON.");
       }
-    } else {
-      const ok = await pushToGist(token, gistId, songs);
-      if (ok) alert("Pushed to Gist ✅");
     }
-  }
 
-  function loadSyncConfig() {
-    try { return JSON.parse(localStorage.getItem(LS_SYNC) || "null"); }
-    catch { return null; }
-  }
-  function saveSyncConfig(cfg) {
-    localStorage.setItem(LS_SYNC, JSON.stringify(cfg));
-  }
+    async function saveToGist(){
+      saveSyncSettings();
+      const gistId = $("gistId").value.trim();
+      const token = $("ghToken").value.trim();
+      if(!gistId || !token){
+        alert("Fill in both Gist ID and GitHub token first.");
+        return;
+      }
 
-  async function createGist(token) {
-    try {
-      const res = await fetch("https://api.github.com/gists", {
-        method: "POST",
-        headers: {
-          "Authorization": "token " + token,
-          "Accept": "application/vnd.github+json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          description: "My Songs Sync",
-          public: false,
-          files: { "mySongs.json": { content: "[]" } }
-        })
-      });
-      if (!res.ok) throw new Error("Failed to create Gist");
-      const data = await res.json();
-      return data.id;
-    } catch (e) {
-      alert("Gist create failed: " + e.message);
-      return null;
-    }
-  }
-
-  async function pullFromGist(token, gistId) {
-    try {
-      const res = await fetch("https://api.github.com/gists/" + gistId, {
-        headers: {
-          "Authorization": "token " + token,
-          "Accept": "application/vnd.github+json"
+      const body = {
+        files: {
+          "songs.json": { content: JSON.stringify(songs, null, 2) }
         }
-      });
-      if (!res.ok) throw new Error("Failed to fetch Gist");
-      const data = await res.json();
-      const file = data.files?.["mySongs.json"];
-      if (!file?.content) throw new Error("Gist missing mySongs.json");
-      const parsed = JSON.parse(file.content);
-      if (!Array.isArray(parsed)) throw new Error("Invalid JSON data");
-      return parsed;
-    } catch (e) {
-      alert("Pull failed: " + e.message);
-      return null;
-    }
-  }
+      };
 
-  async function pushToGist(token, gistId, payload) {
-    try {
-      const res = await fetch("https://api.github.com/gists/" + gistId, {
+      const res = await fetch(`https://api.github.com/gists/${gistId}`, {
         method: "PATCH",
         headers: {
-          "Authorization": "token " + token,
-          "Accept": "application/vnd.github+json",
+          "Authorization": `token ${token}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          files: { "mySongs.json": { content: JSON.stringify(payload, null, 2) } }
-        })
+        body: JSON.stringify(body)
       });
-      if (!res.ok) throw new Error("Failed to update Gist");
-      return true;
-    } catch (e) {
-      alert("Push failed: " + e.message);
-      return false;
+
+      if(!res.ok){
+        alert("Could not save gist. Check token permissions.");
+        return;
+      }
+
+      alert("Saved to Gist ✅");
     }
-  }
 
-  // ---------- Helpers ----------
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, (m) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
-  }
+    function clearLocal(){
+      const ok = confirm("Clear ALL local data on this device?");
+      if(!ok) return;
+      localStorage.removeItem(LS_KEY);
+      songs = [];
+      render();
+    }
 
-  // ---------- Events ----------
-  $("addBtn").addEventListener("click", openAdd);
-  $("closeBtn").addEventListener("click", closeModal);
-  $("saveBtn").addEventListener("click", saveFromModal);
-  deleteBtn.addEventListener("click", deleteCurrent);
-  overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeModal(); });
+    // ====== Init ======
+    function init(){
+      fillSelect($("filterMood"), MOODS);
+      fillSelect($("filterGenre"), GENRES);
+      fillSelect($("inMood"), MOODS.filter(x=>x!=="Any"));
+      fillSelect($("inGenre"), GENRES.filter(x=>x!=="Any"));
 
-  qEl.addEventListener("input", render);
-  moodFilterEl.addEventListener("change", render);
-  favFilterEl.addEventListener("change", render);
+      loadLocal();
+      loadSyncSettings();
+      render();
 
-  chipsEl.addEventListener("click", (e) => {
-    const chip = e.target.closest(".chip");
-    if (!chip) return;
-    chipsEl.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-    chip.classList.add("active");
-    render();
-  });
+      $("q").addEventListener("input", render);
+      $("filterMood").addEventListener("change", render);
+      $("filterGenre").addEventListener("change", render);
 
-  $("exportBtn").addEventListener("click", exportJson);
-  $("syncBtn").addEventListener("click", syncFlow);
+      $("btnAdd").onclick = ()=> openModal(null);
+      $("btnCancel").onclick = closeModal;
+      $("modalWrap").onclick = (e)=> { if(e.target.id==="modalWrap") closeModal(); };
+      $("btnSave").onclick = upsertSong;
+      $("btnDelete").onclick = deleteSong;
 
-  // First render
-  buildMoodSelects();
-  render();
-})();
-</script>
+      $("btnFavOnly").onclick = ()=>{
+        favOnly = !favOnly;
+        $("btnFavOnly").textContent = favOnly ? "Showing favorites" : "Show favorites";
+        render();
+      };
+
+      $("btnReset").onclick = ()=>{
+        $("q").value = "";
+        $("filterMood").value = "";
+        $("filterGenre").value = "";
+        favOnly = false;
+        $("btnFavOnly").textContent = "Show favorites";
+        render();
+      };
+
+      $("btnLoadGist").onclick = loadFromGist;
+      $("btnSaveGist").onclick = saveToGist;
+      $("btnClearLocal").onclick = clearLocal;
+
+      // autosave sync settings when user types
+      $("gistId").addEventListener("input", saveSyncSettings);
+      $("ghToken").addEventListener("input", saveSyncSettings);
+    }
+
+    init();
+  </script>
 </body>
 </html>
