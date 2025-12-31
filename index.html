@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>My Music List</title>
+  <meta name="theme-color" content="#111111" />
+  <style>
+    :root{
+      --bg:#0b0b0c; --card:#141416; --muted:#a9a9b2; --text:#f1f1f4;
+      --border:#242427; --accent:#ffffff; --danger:#ff4d4d;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg); color:var(--text);
+    }
+    header{
+      position:sticky; top:0; z-index:5;
+      background:rgba(11,11,12,.92); backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--border);
+      padding:14px 14px 10px;
+    }
+    .titleRow{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    h1{font-size:18px; margin:0; letter-spacing:.2px;}
+    .stats{font-size:12px; color:var(--muted); margin-top:6px; display:flex; gap:10px; flex-wrap:wrap;}
+    .pill{
+      border:1px solid var(--border);
+      padding:6px 10px; border-radius:999px; font-size:12px; color:var(--muted);
+      background:rgba(20,20,22,.7);
+    }
+    main{padding:14px; padding-bottom:110px;}
+    .card{
+      background:var(--card); border:1px solid var(--border);
+      border-radius:16px; padding:12px; margin-bottom:12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.25);
+    }
+    .row{display:flex; gap:10px; align-items:center;}
+    .row > *{min-width:0}
+    label{font-size:12px; color:var(--muted); display:block; margin-bottom:6px;}
+    input, select, textarea{
+      width:100%; border-radius:12px; border:1px solid var(--border);
+      background:#0f0f10; color:var(--text);
+      padding:11px 12px; outline:none;
+      font-size:14px;
+    }
+    textarea{resize:vertical; min-height:44px;}
+    button{
+      border:1px solid var(--border); background:#101012; color:var(--text);
+      padding:10px 12px; border-radius:12px; font-size:14px;
+    }
+    button:active{transform:scale(.99)}
+    .btnPrimary{background:var(--accent); color:#000; border-color:transparent; font-weight:600;}
+    .btnDanger{background:transparent; border-color:#3a1b1b; color:#ffb3b3;}
+    .btnGhost{background:transparent;}
+    .controls{
+      display:grid; grid-template-columns: 1fr; gap:10px;
+    }
+    .controls2{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
+    .small{font-size:12px; color:var(--muted);}
+    .listHeader{
+      display:flex; justify-content:space-between; align-items:center;
+      margin:14px 0 10px;
+    }
+    .listHeader h2{font-size:14px; margin:0; color:var(--muted); font-weight:600;}
+    .songCard{
+      padding:12px;
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .songTop{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .songMain{display:flex; flex-direction:column; gap:2px;}
+    .songTitle{font-size:15px; font-weight:650; line-height:1.2}
+    .songMeta{font-size:12px; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap;}
+    .nums{
+      font-variant-numeric: tabular-nums;
+      font-size:12px; color:var(--muted);
+      border:1px solid var(--border); background:#0f0f10;
+      padding:6px 10px; border-radius:999px; white-space:nowrap;
+    }
+    .star{
+      font-size:18px; line-height:1; padding:8px 10px;
+      border-radius:12px; border:1px solid var(--border);
+      background:#0f0f10;
+    }
+    .star.on{background:#1a1a1d; border-color:#3a3a3f;}
+    .songActions{
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    details{
+      border-top:1px solid var(--border);
+      padding-top:10px;
+    }
+    summary{cursor:pointer; color:var(--muted); font-size:13px; list-style:none;}
+    summary::-webkit-details-marker{display:none}
+    .footerBar{
+      position:fixed; left:0; right:0; bottom:0; z-index:6;
+      background:rgba(11,11,12,.92); backdrop-filter: blur(10px);
+      border-top:1px solid var(--border);
+      padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    }
+    .footerRow{display:flex; gap:10px;}
+    .footerRow button{flex:1}
+    .divider{height:1px; background:var(--border); margin:10px 0;}
+    .hidden{display:none !important;}
+    .mono{font-variant-numeric: tabular-nums;}
+    .hint{font-size:12px; color:var(--muted); margin-top:6px;}
+    .group{
+      margin-bottom:14px;
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      background:rgba(20,20,22,.6);
+    }
+    .groupHead{
+      padding:10px 12px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid var(--border);
+      background:rgba(15,15,16,.7);
+    }
+    .groupName{font-weight:700}
+    .groupCount{color:var(--muted); font-size:12px}
+    .groupBody{padding:10px 10px 0;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="titleRow">
+      <h1>My Music List</h1>
+      <button class="btnGhost" id="btnOpenAdd">＋ Add</button>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <main>
+    <section class="card" id="addCard">
+      <div class="row" style="justify-content:space-between; margin-bottom:8px;">
+        <div style="font-weight:700;">Add / Edit Song</div>
+        <button class="btnGhost" id="btnCloseAdd">Close</button>
+      </div>
+
+      <div class="controls">
+        <div>
+          <label>Artist</label>
+          <input id="inpArtist" placeholder="e.g. Radiohead" autocomplete="off" />
+        </div>
+        <div>
+          <label>Song title</label>
+          <input id="inpTitle" placeholder="e.g. Karma Police" autocomplete="off" />
+        </div>
+        <div class="controls2">
+          <div>
+            <label>Favorite</label>
+            <select id="inpFav">
+              <option value="false">No</option>
+              <option value="true">Yes ⭐</option>
+            </select>
+          </div>
+          <div>
+            <label>Mood (optional)</label>
+            <input id="inpMood" placeholder="e.g. chill / gym / sad" autocomplete="off" />
+          </div>
+        </div>
+        <div>
+          <label>Notes (optional)</label>
+          <textarea id="inpNotes" placeholder="Extra info (optional)"></textarea>
+        </div>
+
+        <div class="row">
+          <button class="btnPrimary" id="btnSave" style="flex:1;">Save</button>
+          <button class="btnDanger hidden" id="btnDelete">Delete</button>
+        </div>
+        <div class="hint">Tip: keep it consistent like <b>Artist</b> and <b>Song title</b>. Sorting is automatic (A–Z).</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="controls">
+        <div>
+          <label>Search</label>
+          <input id="inpSearch" placeholder="Search song or artist…" />
+        </div>
+        <div class="controls2">
+          <div>
+            <label>Filter artist</label>
+            <select id="selArtist">
+              <option value="">All artists</option>
+            </select>
+          </div>
+          <div>
+            <label>Favorites</label>
+            <select id="selFav">
+              <option value="all">All</option>
+              <option value="fav">Only favorites ⭐</option>
+              <option value="not">Not favorites</option>
+            </select>
+          </div>
+        </div>
+        <div class="controls2">
+          <div>
+            <label>View</label>
+            <select id="selView">
+              <option value="grouped">Grouped by artist</option>
+              <option value="flat">All songs (flat list)</option>
+            </select>
+          </div>
+          <div>
+            <label>Actions</label>
+            <button id="btnExport">Export JSON</button>
+          </div>
+        </div>
+
+        <details>
+          <summary>Import / Reset</summary>
+          <div class="divider"></div>
+          <div class="controls">
+            <div>
+              <label>Import JSON</label>
+              <input id="fileImport" type="file" accept="application/json" />
+              <div class="hint">Export first so you always have a backup.</div>
+            </div>
+            <button class="btnDanger" id="btnReset">Reset everything</button>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <div class="listHeader">
+      <h2 id="listTitle">Songs</h2>
+      <div class="small" id="listSub"></div>
+    </div>
+
+    <section id="list"></section>
+  </main>
+
+  <div class="footerBar">
+    <div class="footerRow">
+      <button id="btnAddQuick" class="btnPrimary">Add song</button>
+      <button id="btnScrollTop">Top</button>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const LS_KEY = "my_music_list_v1";
+  const $ = (id) => document.getElementById(id);
+
+  const elAddCard = $("addCard");
+  const btnOpenAdd = $("btnOpenAdd");
+  const btnCloseAdd = $("btnCloseAdd");
+  const btnAddQuick = $("btnAddQuick");
+  const btnSave = $("btnSave");
+  const btnDelete = $("btnDelete");
+
+  const inpArtist = $("inpArtist");
+  const inpTitle = $("inpTitle");
+  const inpFav = $("inpFav");
+  const inpMood = $("inpMood");
+  const inpNotes = $("inpNotes");
+
+  const inpSearch = $("inpSearch");
+  const selArtist = $("selArtist");
+  const selFav = $("selFav");
+  const selView = $("selView");
+
+  const btnExport = $("btnExport");
+  const fileImport = $("fileImport");
+  const btnReset = $("btnReset");
+  const btnScrollTop = $("btnScrollTop");
+
+  const elStats = $("stats");
+  const elList = $("list");
+  const elListTitle = $("listTitle");
+  const elListSub = $("listSub");
+
+  let state = {
+    items: [],
+    editingId: null,
+    ui: { addOpen: false }
+  };
+
+  function uid() {
+    return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+
+  function norm(s){ return (s||"").trim(); }
+  function normKey(s){ return norm(s).toLowerCase(); }
+
+  function load() {
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if(raw) state = JSON.parse(raw);
+    }catch(e){}
+    if(!state.items) state.items = [];
+    if(!state.ui) state.ui = { addOpen:false };
+  }
+
+  function save() {
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+  }
+
+  function openAdd(editId=null) {
+    state.ui.addOpen = true;
+    state.editingId = editId;
+
+    btnDelete.classList.add("hidden");
+    if(editId){
+      const it = state.items.find(x => x.id === editId);
+      if(it){
+        inpArtist.value = it.artist || "";
+        inpTitle.value = it.title || "";
+        inpFav.value = String(!!it.favorite);
+        inpMood.value = it.mood || "";
+        inpNotes.value = it.notes || "";
+        btnDelete.classList.remove("hidden");
+      }
+    } else {
+      inpArtist.value = "";
+      inpTitle.value = "";
+      inpFav.value = "false";
+      inpMood.value = "";
+      inpNotes.value = "";
+    }
+
+    elAddCard.classList.remove("hidden");
+    // focus for fast entry
+    setTimeout(() => (inpArtist.value ? inpTitle.focus() : inpArtist.focus()), 50);
+    save(); render();
+  }
+
+  function closeAdd() {
+    state.ui.addOpen = false;
+    state.editingId = null;
+    elAddCard.classList.add("hidden");
+    save(); render();
+  }
+
+  function upsert() {
+    const artist = norm(inpArtist.value);
+    const title = norm(inpTitle.value);
+    if(!artist || !title){
+      alert("Please fill in Artist and Song title.");
+      return;
+    }
+    const favorite = (inpFav.value === "true");
+    const mood = norm(inpMood.value);
+    const notes = norm(inpNotes.value);
+
+    if(state.editingId){
+      const idx = state.items.findIndex(x => x.id === state.editingId);
+      if(idx >= 0){
+        state.items[idx] = { ...state.items[idx], artist, title, favorite, mood, notes };
+      }
+    } else {
+      state.items.push({ id: uid(), artist, title, favorite, mood, notes, createdAt: Date.now() });
+    }
+    save();
+    closeAdd();
+  }
+
+  function delEditing() {
+    if(!state.editingId) return;
+    if(!confirm("Delete this song?")) return;
+    state.items = state.items.filter(x => x.id !== state.editingId);
+    save();
+    closeAdd();
+  }
+
+  function getComputed() {
+    // base sorted by artist A-Z then title A-Z
+    const sorted = [...state.items].sort((a,b) => {
+      const aa = normKey(a.artist), bb = normKey(b.artist);
+      if(aa < bb) return -1;
+      if(aa > bb) return 1;
+      const at = normKey(a.title), bt = normKey(b.title);
+      if(at < bt) return -1;
+      if(at > bt) return 1;
+      return 0;
+    });
+
+    // unique artists (A-Z)
+    const artists = [];
+    const artistIndex = new Map(); // artistKey -> number (1..)
+    for(const it of sorted){
+      const k = normKey(it.artist);
+      if(!artistIndex.has(k)){
+        artists.push(it.artist);
+        artistIndex.set(k, artists.length);
+      }
+    }
+
+    // numbering
+    // globalSongNo = order in sorted list (1..)
+    // withinArtistNo = order inside that artist (1..)
+    const withinCount = new Map(); // artistKey -> counter
+    const computed = sorted.map((it, i) => {
+      const ak = normKey(it.artist);
+      const artistNo = artistIndex.get(ak);
+      const c = (withinCount.get(ak) || 0) + 1;
+      withinCount.set(ak, c);
+      return {
+        ...it,
+        artistNo,
+        globalSongNo: i + 1,
+        withinArtistNo: c,
+        artistKey: ak
+      };
+    });
+
+    return { computed, artists, artistIndex };
+  }
+
+  function applyFilters(computed) {
+    const q = normKey(inpSearch.value);
+    const artistFilter = selArtist.value; // artistKey
+    const favFilter = selFav.value; // all | fav | not
+
+    return computed.filter(it => {
+      if(q){
+        const hay = (normKey(it.artist) + " " + normKey(it.title) + " " + normKey(it.mood) + " " + normKey(it.notes));
+        if(!hay.includes(q)) return false;
+      }
+      if(artistFilter && it.artistKey !== artistFilter) return false;
+      if(favFilter === "fav" && !it.favorite) return false;
+      if(favFilter === "not" && it.favorite) return false;
+      return true;
+    });
+  }
+
+  function renderStats({computed, artists}) {
+    const totalSongs = computed.length;
+    const totalArtists = artists.length;
+    const favs = computed.filter(x => x.favorite).length;
+
+    elStats.innerHTML = "";
+    const pills = [
+      `Songs: <span class="mono">${totalSongs}</span>`,
+      `Artists: <span class="mono">${totalArtists}</span>`,
+      `Favorites: <span class="mono">${favs}</span>`
+    ];
+    for(const p of pills){
+      const d = document.createElement("div");
+      d.className = "pill";
+      d.innerHTML = p;
+      elStats.appendChild(d);
+    }
+  }
+
+  function renderArtistSelect({artists, artistIndex}) {
+    const current = selArtist.value;
+    // rebuild
+    selArtist.innerHTML = `<option value="">All artists</option>`;
+    // Need keys; derive from artistIndex map by re-sorting artists
+    // We'll recompute keys from name.
+    for(const name of artists){
+      const k = normKey(name);
+      const no = artistIndex.get(k);
+      const opt = document.createElement("option");
+      opt.value = k;
+      opt.textContent = `${no}. ${name}`;
+      selArtist.appendChild(opt);
+    }
+    // keep selection if still exists
+    if([...selArtist.options].some(o => o.value === current)){
+      selArtist.value = current;
+    }
+  }
+
+  function songCard(it){
+    const wrap = document.createElement("div");
+    wrap.className = "card songCard";
+
+    const top = document.createElement("div");
+    top.className = "songTop";
+
+    const main = document.createElement("div");
+    main.className = "songMain";
+
+    const title = document.createElement("div");
+    title.className = "songTitle";
+    title.textContent = it.title;
+
+    const meta = document.createElement("div");
+    meta.className = "songMeta";
+    meta.innerHTML = `
+      <span><b>${it.artist}</b></span>
+      <span class="nums">Artist #${it.artistNo}</span>
+      <span class="nums">Song #${it.globalSongNo}</span>
+      <span class="nums">Within artist #${it.withinArtistNo}</span>
+    `;
+
+    main.appendChild(title);
+    main.appendChild(meta);
+
+    const star = document.createElement("button");
+    star.className = "star" + (it.favorite ? " on" : "");
+    star.textContent = it.favorite ? "⭐" : "☆";
+    star.title = "Toggle favorite";
+    star.onclick = () => {
+      const idx = state.items.findIndex(x => x.id === it.id);
+      if(idx >= 0){
+        state.items[idx].favorite = !state.items[idx].favorite;
+        save(); render();
+      }
+    };
+
+    top.appendChild(main);
+    top.appendChild(star);
+
+    const actions = document.createElement("div");
+    actions.className = "songActions";
+
+    const btnEdit = document.createElement("button");
+    btnEdit.textContent = "Edit";
+    btnEdit.onclick = () => openAdd(it.id);
+
+    actions.appendChild(btnEdit);
+
+    if(it.mood || it.notes){
+      const det = document.createElement("details");
+      const sum = document.createElement("summary");
+      sum.textContent = "More info";
+      det.appendChild(sum);
+
+      const box = document.createElement("div");
+      box.style.marginTop = "10px";
+      box.className = "small";
+      box.innerHTML = `
+        ${it.mood ? `<div><b>Mood:</b> ${escapeHtml(it.mood)}</div>` : ""}
+        ${it.notes ? `<div style="margin-top:6px;"><b>Notes:</b> ${escapeHtml(it.notes)}</div>` : ""}
+      `;
+      det.appendChild(box);
+      wrap.appendChild(top);
+      wrap.appendChild(actions);
+      wrap.appendChild(det);
+      return wrap;
+    }
+
+    wrap.appendChild(top);
+    wrap.appendChild(actions);
+    return wrap;
+  }
+
+  function groupedView(items){
+    // group by artistKey
+    const groups = new Map();
+    for(const it of items){
+      if(!groups.has(it.artistKey)) groups.set(it.artistKey, { name: it.artist, artistNo: it.artistNo, songs: [] });
+      groups.get(it.artistKey).songs.push(it);
+    }
+    // groups already in A-Z order because items sorted; preserve insertion
+    const frag = document.createDocumentFragment();
+
+    for(const [,g] of groups){
+      const group = document.createElement("div");
+      group.className = "group";
+
+      const head = document.createElement("div");
+      head.className = "groupHead";
+      head.innerHTML = `
+        <div>
+          <div class="groupName">${g.artistNo}. ${escapeHtml(g.name)}</div>
+          <div class="groupCount">${g.songs.length} song(s)</div>
+        </div>
+        <div class="nums">Artist #${g.artistNo}</div>
+      `;
+
+      const body = document.createElement("div");
+      body.className = "groupBody";
+      for(const s of g.songs){
+        body.appendChild(songCard(s));
+      }
+
+      group.appendChild(head);
+      group.appendChild(body);
+      frag.appendChild(group);
+    }
+    return frag;
+  }
+
+  function flatView(items){
+    const frag = document.createDocumentFragment();
+    for(const it of items){
+      frag.appendChild(songCard(it));
+    }
+    return frag;
+  }
+
+  function render() {
+    // add card open/close state
+    if(state.ui.addOpen) elAddCard.classList.remove("hidden");
+    else elAddCard.classList.add("hidden");
+
+    const base = getComputed();
+    renderStats(base);
+    renderArtistSelect(base);
+
+    const filtered = applyFilters(base.computed);
+
+    // titles
+    elListTitle.textContent = (selView.value === "grouped") ? "Artists (A–Z)" : "All songs (A–Z)";
+    elListSub.textContent = `${filtered.length} result(s)`;
+
+    // render list
+    elList.innerHTML = "";
+    if(filtered.length === 0){
+      const empty = document.createElement("div");
+      empty.className = "card";
+      empty.innerHTML = `<div style="font-weight:700;margin-bottom:6px;">No results</div>
+                         <div class="small">Try clearing filters or add a new song.</div>`;
+      elList.appendChild(empty);
+      return;
+    }
+
+    if(selView.value === "grouped"){
+      elList.appendChild(groupedView(filtered));
+    } else {
+      elList.appendChild(flatView(filtered));
+    }
+  }
+
+  function exportJSON() {
+    const data = { items: state.items };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "my-music-list.json";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function importJSON(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const parsed = JSON.parse(String(reader.result));
+        if(!parsed || !Array.isArray(parsed.items)) throw new Error("Invalid file");
+        // normalize
+        state.items = parsed.items.map(x => ({
+          id: x.id || uid(),
+          artist: norm(x.artist),
+          title: norm(x.title),
+          favorite: !!x.favorite,
+          mood: norm(x.mood),
+          notes: norm(x.notes),
+          createdAt: x.createdAt || Date.now()
+        })).filter(x => x.artist && x.title);
+        save(); render();
+        alert("Import successful!");
+      }catch(e){
+        alert("Import failed. Make sure it's a valid export JSON file.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function resetAll() {
+    if(!confirm("Reset everything? This cannot be undone.")) return;
+    state.items = [];
+    state.editingId = null;
+    state.ui.addOpen = false;
+    save(); render();
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  // Wire up events
+  btnOpenAdd.onclick = () => openAdd(null);
+  btnAddQuick.onclick = () => openAdd(null);
+  btnCloseAdd.onclick = () => closeAdd();
+  btnSave.onclick = () => upsert();
+  btnDelete.onclick = () => delEditing();
+
+  inpSearch.oninput = () => render();
+  selArtist.onchange = () => render();
+  selFav.onchange = () => render();
+  selView.onchange = () => render();
+
+  btnExport.onclick = exportJSON;
+  fileImport.onchange = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if(f) importJSON(f);
+    fileImport.value = "";
+  };
+  btnReset.onclick = resetAll;
+
+  btnScrollTop.onclick = () => window.scrollTo({top:0, behavior:"smooth"});
+
+  // init
+  load();
+  // open add panel only if requested
+  if(!state.ui.addOpen) elAddCard.classList.add("hidden");
+  render();
+})();
+</script>
+</body>
+</html>
