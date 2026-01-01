@@ -104,6 +104,18 @@
     .subtitle{color:var(--muted);font-size:12.5px;margin-top:2px}
 
     .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    
+    .countsGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (min-width:640px){
+      .countsGrid{
+        grid-template-columns: repeat(4, auto);
+      }
+    }
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:9px 12px;
@@ -158,10 +170,7 @@
       .grid2{grid-template-columns: 1fr 1fr}
     }
     
-    .grid3{display:grid; grid-template-columns: 1fr; gap:10px}
-    @media (min-width:500px){
-      .grid3{grid-template-columns: 1fr 1fr}
-    }
+    .grid3{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
     @media (min-width:740px){
       .grid3{grid-template-columns: 1fr 1fr 1fr}
     }
@@ -364,7 +373,7 @@
     <input class="input" id="quickSearch" placeholder="🔍 Quick search (artist or song)..." autocomplete="off" />
   </div>
 
-  <div class="row" id="countsRow">
+  <div class="countsGrid" id="countsRow">
     <div class="pill"><strong id="countSongs">0</strong><span class="dot">•</span> Songs</div>
     <div class="pill"><strong id="countArtists">0</strong><span class="dot">•</span> Artists</div>
     <div class="pill"><strong id="countGenres">0</strong><span class="dot">•</span> Genres</div>
@@ -386,10 +395,6 @@
 
       <div class="grid3">
         <div class="field">
-          <label>Search (artist or song)</label>
-          <input class="input" id="q" placeholder="Type to search…" autocomplete="off" />
-        </div>
-        <div class="field">
           <label>Favorite</label>
           <select id="favFilter">
             <option value="any">Any</option>
@@ -402,13 +407,13 @@
           <label>Genre</label>
           <select id="genreFilter"></select>
         </div>
-      </div>
-
-      <div class="grid3">
         <div class="field">
           <label>Language</label>
           <select id="langFilter"></select>
         </div>
+      </div>
+
+      <div class="grid3">
         <div class="field">
           <label>Country</label>
           <select id="countryFilter"></select>
@@ -419,6 +424,7 @@
             <option value="artist_song">Artist A–Z → Song A–Z</option>
           </select>
         </div>
+        <div></div>
       </div>
 
       <div class="btnRow">
@@ -580,7 +586,6 @@
   // Filters
   const filtersToggle = $("filtersToggle");
   const filtersBody = $("filtersBody");
-  const qEl = $("q");
   const favFilterEl = $("favFilter");
   const genreFilterEl = $("genreFilter");
   const langFilterEl = $("langFilter");
@@ -653,7 +658,7 @@
   });
 
   applyFiltersBtn.addEventListener("click", () => {
-    state.ui.q = qEl.value || "";
+    state.ui.q = quickSearchEl.value || "";
     state.ui.favFilter = favFilterEl.value;
     state.ui.genreFilter = genreFilterEl.value;
     state.ui.langFilter = langFilterEl.value;
@@ -769,10 +774,8 @@
   });
 
   // Live-search
-  qEl.addEventListener("input", () => renderEverything());
   quickSearchEl.addEventListener("input", () => {
-    // Sync with the filters search
-    qEl.value = quickSearchEl.value;
+    state.ui.q = quickSearchEl.value;
     renderEverything();
   });
 
@@ -1174,8 +1177,7 @@
   }
 
   function syncFilterInputs(){
-    qEl.value = state.ui.q || qEl.value || "";
-    quickSearchEl.value = qEl.value; // Keep sticky search in sync
+    quickSearchEl.value = state.ui.q || "";
     favFilterEl.value = state.ui.favFilter || "any";
     genreFilterEl.value = state.ui.genreFilter || "any";
     langFilterEl.value = state.ui.langFilter || "any";
@@ -1184,7 +1186,7 @@
 
   function getFilteredSongs(){
     const base = getSortedSongs(state.songs);
-    const q = (quickSearchEl.value || qEl.value || state.ui.q || "").trim().toLowerCase();
+    const q = (quickSearchEl.value || state.ui.q || "").trim().toLowerCase();
     const fav = state.ui.favFilter || favFilterEl.value || "any";
     const g = state.ui.genreFilter || genreFilterEl.value || "any";
     const l = state.ui.langFilter || langFilterEl.value || "any";
