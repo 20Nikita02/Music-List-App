@@ -813,6 +813,7 @@
   <!-- ========== Sticky Search ========== -->
   <div class="stickySearch">
     <input class="input" id="quickSearch" placeholder="🔍 Quick search (artist or song)..." autocomplete="off" />
+    <button class="btn" id="bulkToggleBtn">☐ Edit Mode</button>
   </div>
 
   <!-- ========== Counts ========== -->
@@ -825,7 +826,7 @@
 
   <!-- ========== Action Row ========== -->
   <div class="actionRow">
-    <button class="btn" id="bulkToggleBtn">☐ Edit Mode</button>
+    <!--<button class="btn" id="bulkToggleBtn">☐ Edit Mode</button>-->
   </div>
 
   <!-- ========== Filters ========== -->
@@ -1205,7 +1206,7 @@
   // Add/Edit
   addToggle.addEventListener("click", () => {
     const willCollapse = !addBody.classList.contains("hidden");
-    setCollapsed(addBody, addToggle, willCollapse, "Add new song");
+    setCollapsed(addBody, addToggle, willCollapse, "Add Song");
     if (!willCollapse) {
       setTimeout(() => songTitleEl.focus(), 50);
     }
@@ -1264,7 +1265,7 @@
     editingId = null;
     saveState();
     clearForm();
-    setCollapsed(addBody, addToggle, true, "Add new song");
+    setCollapsed(addBody, addToggle, true, "Add Song");
     renderEverything();
   });
 
@@ -1422,7 +1423,7 @@
       state.songs.push(pendingDuplicateSong);
       saveState();
       clearForm();
-      setCollapsed(addBody, addToggle, true, "Add new song");
+      setCollapsed(addBody, addToggle, true, "Add Song");
       renderEverything();
     }
     duplicateModal.classList.add("hidden");
@@ -1721,7 +1722,7 @@
       if (btnEl === filtersToggle) btnEl.textContent = "Open ▴";
       if (btnEl === genresToggle) btnEl.textContent = "Open ▴";
     }
-    if (btnEl === addToggle && collapsed) btnEl.textContent = (openLabel || "Add new song") + " ▾";
+    if (btnEl === addToggle && collapsed) btnEl.textContent = (openLabel || "Add Song") + " ▾";
   }
 
   function mkTag(text, kind){
