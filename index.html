@@ -977,7 +977,7 @@
       <div class="cardHeadLeft">
         <div>
           <div class="cardHeadTitle">🎵 Genre Overview</div>
-          <div class="cardHeadHint">Your music genres visualized</div>
+         <!--<div class="cardHeadHint">Your music genres visualized</div> -->
         </div>
       </div>
       <button class="collapseBtn" id="genresToggle">Collapsed ▾</button>
@@ -1007,8 +1007,8 @@
   <!-- ========== Song List ========== -->
   <div class="listWrap" id="list"></div>
 
-  <div class="help" style="text-align:center; margin-top:18px;">
-    Built for vertical scrolling only • Works offline after first load • Designed for 5,000+ songs
+  <div class="help" style="text-align:center; margin-top:16px;">
+    Works offline after first load • Designed for 5,000+ songs
   </div>
 
 </div>
@@ -1345,10 +1345,10 @@
     selectedSongs.clear();
     
     if (bulkMode) {
-      bulkToggleBtn.textContent = "☑ Bulk Edit Mode";
+      bulkToggleBtn.textContent = "☑ Edit Mode";
       bulkToggleBtn.classList.add("active");
     } else {
-      bulkToggleBtn.textContent = "☐ Bulk Edit Mode";
+      bulkToggleBtn.textContent = "☐ Edit Mode";
       bulkToggleBtn.classList.remove("active");
       floatingBar.classList.add("hidden");
     }
@@ -2015,5 +2015,6 @@
 </script>
 </body>
 </html>
+
 
 
