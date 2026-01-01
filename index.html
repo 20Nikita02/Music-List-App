@@ -95,14 +95,14 @@
     }
     
     .stickySearch .input{
-      width:50%;
+      width:60%;
       padding:14px 16px;
       border-radius:16px;
       border:1px solid var(--stroke2);
       background:linear-gradient(180deg, #0b1020, #0f1524);
       color:var(--text);
       outline:none;
-      font-size:15px;
+      font-size:14px;
     }
     
     .stickySearch .input::placeholder{
@@ -134,7 +134,7 @@
       background:linear-gradient(180deg, #0f1524d6, #0f1524aa);
       box-shadow: 0 10px 22px rgba(0,0,0,.22);
       color:var(--muted);
-      font-size:12.5px;
+      font-size:12px;
       white-space:nowrap;
     }
     
@@ -269,6 +269,7 @@
       border-radius:16px;
       cursor:pointer;
       font-weight:800;
+      font-size: 12px;
     }
     
     .btn:active{transform: translateY(1px)}
@@ -286,7 +287,7 @@
     .btn.small{
       padding:9px 12px;
       border-radius:14px;
-      font-size:12.5px;
+      font-size:12px;
     }
     
     .btn.active{
@@ -635,8 +636,8 @@
 
     /* ========== Bulk Edit ========== */
     .checkbox{
-      width:20px;
-      height:20px;
+      width:25px;
+      height:25px;
       border-radius:6px;
       border:2px solid var(--stroke2);
       background:rgba(0,0,0,.3);
@@ -806,14 +807,14 @@
       </svg>
     </div>
     <div style="min-width:0">
-      <h1>Nikita Life Long Music List</h1>
+      <h1>Life Long Music List</h1>
     </div>
   </div>
 
   <!-- ========== Sticky Search ========== -->
   <div class="stickySearch">
     <input class="input" id="quickSearch" placeholder="🔍 Quick search (artist or song)..." autocomplete="off" />
-    <button class="btn" id="bulkToggleBtn">☐ Edit Mode</button>
+    <button class="btn" id="bulkToggleBtn">☐ Select</button>
   </div>
 
   <!-- ========== Counts ========== -->
@@ -824,10 +825,6 @@
     <div class="pill"><strong id="countCountries">0</strong><span class="dot">•</span> Countries</div>
   </div>
 
-  <!-- ========== Action Row ========== -->
-  <div class="actionRow">
-    <!--<button class="btn" id="bulkToggleBtn">☐ Edit Mode</button>-->
-  </div>
 
   <!-- ========== Filters ========== -->
   <div class="card" id="filtersCard">
@@ -1337,10 +1334,10 @@
     selectedSongs.clear();
     
     if (bulkMode) {
-      bulkToggleBtn.textContent = "☑ Edit Mode";
+      bulkToggleBtn.textContent = "☑ Selected";
       bulkToggleBtn.classList.add("active");
     } else {
-      bulkToggleBtn.textContent = "☐ Edit Mode";
+      bulkToggleBtn.textContent = "☐ Select";
       bulkToggleBtn.classList.remove("active");
       floatingBar.classList.add("hidden");
     }
