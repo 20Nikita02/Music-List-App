@@ -349,6 +349,171 @@
     canvas{width:100%; height:auto; display:block; border-radius:14px}
 
     .tinyNote{opacity:.75}
+    
+    /* Genre Visualization (Hybrid) */
+    .genreViz{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    
+    .topGenres{
+      padding:8px;
+    }
+    
+    .topGenresTitle{
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+      margin-bottom:10px;
+      text-align:center;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    
+    .bubbleCloud{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      justify-content:center;
+    }
+    
+    .bubble{
+      display:inline-flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:12px 16px;
+      border-radius:999px;
+      border:1px solid rgba(122,162,255,0.3);
+      background: linear-gradient(180deg, rgba(122,162,255,0.25), rgba(122,162,255,0.12));
+      transition: all 0.2s ease;
+      cursor:pointer;
+      min-width:0;
+    }
+    
+    .bubble:active{transform: scale(0.95)}
+    
+    .bubble.size-xl{padding:18px 24px}
+    .bubble.size-lg{padding:15px 20px}
+    .bubble.size-md{padding:12px 16px}
+    .bubble.size-sm{padding:10px 14px}
+    
+    .bubbleName{
+      font-weight:900;
+      color:var(--text);
+      font-size:13px;
+      line-height:1.2;
+      word-break:break-word;
+    }
+    
+    .size-xl .bubbleName{font-size:16px}
+    .size-lg .bubbleName{font-size:14px}
+    .size-md .bubbleName{font-size:13px}
+    .size-sm .bubbleName{font-size:12px}
+    
+    .bubbleCount{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:3px;
+      font-weight:700;
+    }
+    
+    .size-xl .bubbleCount{font-size:12px}
+    .size-lg .bubbleCount{font-size:11px}
+    
+    .restGenres{
+      border-top:1px solid var(--stroke);
+      padding-top:12px;
+    }
+    
+    .restGenresHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:10px;
+      padding:0 4px;
+    }
+    
+    .restGenresTitle{
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+    }
+    
+    .expandBtn{
+      background:none;
+      border:1px solid var(--stroke);
+      color:var(--text);
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      cursor:pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .expandBtn:active{transform: scale(0.95)}
+    
+    .compactList{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:6px;
+      max-height:200px;
+      overflow:hidden;
+      transition: max-height 0.3s ease;
+    }
+    
+    .compactList.expanded{
+      max-height:2000px;
+    }
+    
+    @media (min-width:500px){
+      .compactList{
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    .compactGenre{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, #0b1020, #0f1524);
+      font-size:12px;
+      gap:6px;
+    }
+    
+    .compactGenreName{
+      font-weight:800;
+      color:var(--text);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      min-width:0;
+    }
+    
+    .compactGenreCount{
+      font-weight:800;
+      color:var(--accent);
+      font-size:11px;
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+    
+    .genreStats{
+      text-align:center;
+      padding:12px;
+      border-top:1px solid var(--stroke);
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+    }
   </style>
 </head>
 <body>
@@ -518,25 +683,35 @@
     </div>
   </div>
 
-  <!-- Charts -->
+  <!-- Genre Visualization -->
   <div class="card">
     <div class="cardHead">
       <div class="cardHeadLeft">
         <div>
-          <div class="cardHeadTitle">📊 Charts (compact)</div>
-          <div class="cardHeadHint">Genre only (collapsed by default)</div>
+          <div class="cardHeadTitle">🎵 Genre Overview</div>
+          <div class="cardHeadHint">Your music genres visualized</div>
         </div>
       </div>
-      <button class="collapseBtn" id="chartsToggle">Collapsed ▾</button>
+      <button class="collapseBtn" id="genresToggle">Collapsed ▾</button>
     </div>
-    <div class="cardBody hidden" id="chartsBody">
-      <div class="chartWrap">
-        <div class="chartTitle">
-          <span>Genre distribution</span>
-          <small id="chartMeta">0 genres</small>
+    <div class="cardBody hidden" id="genresBody">
+      <div class="genreViz">
+        <div class="topGenres">
+          <div class="topGenresTitle">🔥 Most Played</div>
+          <div class="bubbleCloud" id="topBubbles"></div>
         </div>
-        <canvas id="genreChart" width="720" height="360"></canvas>
-        <div class="help">Tip: long genre names wrap (no overlap). Bars update automatically.</div>
+        
+        <div class="restGenres" id="restGenresSection" style="display:none">
+          <div class="restGenresHeader">
+            <div class="restGenresTitle">Other Genres (<span id="restCount">0</span>)</div>
+            <button class="expandBtn" id="expandBtn">Show all</button>
+          </div>
+          <div class="compactList" id="restList"></div>
+        </div>
+        
+        <div class="genreStats">
+          Total: <strong><span id="totalGenresCount">0</span> genres</strong>
+        </div>
       </div>
     </div>
   </div>
@@ -613,11 +788,15 @@
   const exportBtn = $("exportBtn");
   const importFile = $("importFile");
 
-  // Charts
-  const chartsToggle = $("chartsToggle");
-  const chartsBody = $("chartsBody");
-  const genreChartCanvas = $("genreChart");
-  const chartMeta = $("chartMeta");
+  // Genres
+  const genresToggle = $("genresToggle");
+  const genresBody = $("genresBody");
+  const topBubblesEl = $("topBubbles");
+  const restListEl = $("restList");
+  const restCountEl = $("restCount");
+  const totalGenresCountEl = $("totalGenresCount");
+  const expandBtn = $("expandBtn");
+  const restGenresSection = $("restGenresSection");
 
   // Artist suggestions
   const artistsList = $("artistsList");
@@ -627,7 +806,7 @@
 
   // Collapsed defaults
   setCollapsed(filtersBody, filtersToggle, true);
-  setCollapsed(chartsBody, chartsToggle, true);
+  setCollapsed(genresBody, genresToggle, true);
   setCollapsed(addBody, addToggle, true, "Add new song");
 
   // Populate option lists
@@ -642,10 +821,20 @@
     setCollapsed(filtersBody, filtersToggle, willCollapse);
   });
 
-  chartsToggle.addEventListener("click", () => {
-    const willCollapse = !chartsBody.classList.contains("hidden");
-    setCollapsed(chartsBody, chartsToggle, willCollapse);
-    if (!willCollapse) drawCharts(); // only draw when opened
+  genresToggle.addEventListener("click", () => {
+    const willCollapse = !genresBody.classList.contains("hidden");
+    setCollapsed(genresBody, genresToggle, willCollapse);
+    if (!willCollapse) renderGenreViz(); // render when opened
+  });
+
+  expandBtn.addEventListener("click", () => {
+    if(restListEl.classList.contains('expanded')){
+      restListEl.classList.remove('expanded');
+      expandBtn.textContent = 'Show all';
+    } else {
+      restListEl.classList.add('expanded');
+      expandBtn.textContent = 'Show less';
+    }
   });
 
   addToggle.addEventListener("click", () => {
@@ -799,8 +988,71 @@
 
     renderList(filtered);
 
-    // update chart meta and redraw if open
-    if (!chartsBody.classList.contains("hidden")) drawCharts();
+    // update genre viz if open
+    if (!genresBody.classList.contains("hidden")) renderGenreViz();
+  }
+
+  // ---------------- Genre Visualization ----------------
+
+  function renderGenreViz(){
+    const TOP_COUNT = 6; // Show top 6 as bubbles
+    
+    // Count genres from full database
+    const all = getSortedSongs(state.songs);
+    const counts = new Map();
+    for (const s of all){
+      const g = s.genre || "Other";
+      counts.set(g, (counts.get(g) || 0) + 1);
+    }
+    
+    // Sort by count descending
+    const entries = Array.from(counts.entries()).sort((a,b) => b[1] - a[1]);
+    const maxCount = Math.max(1, ...entries.map(e => e[1]));
+    
+    const topGenres = entries.slice(0, TOP_COUNT);
+    const restGenres = entries.slice(TOP_COUNT);
+    
+    // Update total count
+    totalGenresCountEl.textContent = entries.length;
+    
+    // Render top bubbles
+    topBubblesEl.innerHTML = "";
+    topGenres.forEach(([name, count]) => {
+      const sizeClass = getGenreSizeClass(count, maxCount);
+      const bubble = document.createElement('div');
+      bubble.className = `bubble ${sizeClass}`;
+      bubble.innerHTML = `
+        <div class="bubbleName">${name}</div>
+        <div class="bubbleCount">${count} songs</div>
+      `;
+      topBubblesEl.appendChild(bubble);
+    });
+    
+    // Render rest as compact list
+    if (restGenres.length > 0){
+      restGenresSection.style.display = 'block';
+      restCountEl.textContent = restGenres.length;
+      restListEl.innerHTML = "";
+      restGenres.forEach(([name, count]) => {
+        const item = document.createElement('div');
+        item.className = 'compactGenre';
+        item.innerHTML = `
+          <div class="compactGenreName">${name}</div>
+          <div class="compactGenreCount">${count}</div>
+        `;
+        restListEl.appendChild(item);
+      });
+    } else {
+      restGenresSection.style.display = 'none';
+    }
+  }
+  
+  function getGenreSizeClass(count, max){
+    const percentage = count / max;
+    if (percentage >= 0.70) return 'size-xl';
+    if (percentage >= 0.50) return 'size-lg';
+    if (percentage >= 0.30) return 'size-md';
+    return 'size-sm';
   }
 
   function renderList(songs){
@@ -952,89 +1204,6 @@
 
     rebuildArtistDatalist();
   }
-
-  // ---------------- Charts ----------------
-
-  function drawCharts(){
-    // Genre distribution from FULL DB
-    const all = getSortedSongs(state.songs);
-    const counts = new Map();
-    for (const s of all){
-      const g = s.genre || "Other";
-      counts.set(g, (counts.get(g) || 0) + 1);
-    }
-
-    const entries = Array.from(counts.entries()).sort((a,b) => b[1]-a[1]);
-    chartMeta.textContent = `Top ${entries.length} shown`;
-
-    const ctx = genreChartCanvas.getContext("2d");
-    const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
-
-    const rowH = 30;
-    const padTop = 14, padBottom = 14;
-    const heightCss = Math.max(180, padTop + padBottom + entries.length * rowH);
-    const widthCss = genreChartCanvas.clientWidth || 720;
-
-    genreChartCanvas.style.height = heightCss + "px";
-    genreChartCanvas.width = Math.floor(widthCss * dpr);
-    genreChartCanvas.height = Math.floor(heightCss * dpr);
-
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-
-    ctx.clearRect(0,0,widthCss,heightCss);
-
-    const text = getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#eaf0ff";
-    const muted = getComputedStyle(document.documentElement).getPropertyValue("--muted").trim() || "#a9b3d6";
-    const stroke = "rgba(255,255,255,0.10)";
-
-    const maxVal = Math.max(1, ...entries.map(e => e[1]));
-    const leftPad = 12;
-    const rightPad = 12;
-
-    const labelCol = Math.min(280, Math.max(180, Math.floor(widthCss * 0.50)));
-    const barX = leftPad + labelCol + 10;
-    const barW = widthCss - barX - rightPad;
-
-    roundRect(ctx, 0.5, 0.5, widthCss-1, heightCss-1, 14, "rgba(255,255,255,0.06)");
-
-    ctx.font = "700 12px system-ui";
-    ctx.fillStyle = muted;
-
-    ctx.strokeStyle = stroke;
-    ctx.lineWidth = 1;
-    for (let i=0;i<=4;i++){
-      const x = barX + (barW * i/4);
-      ctx.beginPath();
-      ctx.moveTo(x, padTop-4);
-      ctx.lineTo(x, heightCss-padBottom+4);
-      ctx.stroke();
-    }
-
-    for (let i=0;i<entries.length;i++){
-      const [label, val] = entries[i];
-      const y = padTop + i*rowH;
-
-      drawWrappedText(ctx, label, leftPad, y+6, labelCol, 14, text, muted);
-
-      const w = Math.max(2, Math.round((val/maxVal)*barW*0.65));
-      const barY = y + 6;
-      const barH = 16;
-
-      ctx.fillStyle = "rgba(122,162,255,0.18)";
-      roundRectFill(ctx, barX, barY, barW, barH, 10);
-
-      ctx.fillStyle = "rgba(122,162,255,0.55)";
-      roundRectFill(ctx, barX, barY, w, barH, 10);
-
-      ctx.fillStyle = muted;
-      ctx.font = "800 12px system-ui";
-      ctx.fillText(String(val), barX + w + 8, barY + 13);
-    }
-  }
-
-  window.addEventListener("resize", () => {
-    if (!chartsBody.classList.contains("hidden")) drawCharts();
-  });
 
   // ---------------- Helpers ----------------
 
@@ -1275,70 +1444,6 @@
 
   function cryptoId(){
     return "s_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
-  }
-
-  // --- Canvas utilities ---
-  function roundRect(ctx, x, y, w, h, r, strokeStyle){
-    ctx.save();
-    ctx.strokeStyle = strokeStyle;
-    ctx.beginPath();
-    const rr = Math.min(r, w/2, h/2);
-    ctx.moveTo(x+rr, y);
-    ctx.arcTo(x+w, y, x+w, y+h, rr);
-    ctx.arcTo(x+w, y+h, x, y+h, rr);
-    ctx.arcTo(x, y+h, x, y, rr);
-    ctx.arcTo(x, y, x+w, y, rr);
-    ctx.closePath();
-    ctx.stroke();
-    ctx.restore();
-  }
-  function roundRectFill(ctx, x, y, w, h, r){
-    ctx.beginPath();
-    const rr = Math.min(r, w/2, h/2);
-    ctx.moveTo(x+rr, y);
-    ctx.arcTo(x+w, y, x+w, y+h, rr);
-    ctx.arcTo(x+w, y+h, x, y+h, rr);
-    ctx.arcTo(x, y+h, x, y, rr);
-    ctx.arcTo(x, y, x+w, y, rr);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, colorPrimary, colorMuted){
-    const words = String(text).split(" ");
-    let line = "";
-    const lines = [];
-
-    for (const w of words){
-      const test = line ? (line + " " + w) : w;
-      if (ctx.measureText(test).width <= maxWidth){
-        line = test;
-      } else {
-        lines.push(line);
-        line = w;
-        if (lines.length === 2) break;
-      }
-    }
-    if (line && lines.length < 2) lines.push(line);
-
-    const usedWords = lines.join(" ").split(" ").length;
-    if (usedWords < words.length && lines.length){
-      let second = lines[lines.length-1];
-      while (ctx.measureText(second + "…").width > maxWidth && second.length > 3){
-        second = second.slice(0, -1);
-      }
-      lines[lines.length-1] = second + "…";
-    }
-
-    ctx.font = "900 12px system-ui";
-    ctx.fillStyle = colorPrimary;
-    ctx.fillText(lines[0] || "", x, y + 12);
-
-    if (lines[1]){
-      ctx.font = "800 11px system-ui";
-      ctx.fillStyle = colorMuted;
-      ctx.fillText(lines[1], x, y + 12 + lineHeight);
-    }
   }
 
 })();
