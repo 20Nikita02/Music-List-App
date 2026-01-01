@@ -825,7 +825,7 @@
 
   <!-- ========== Action Row ========== -->
   <div class="actionRow">
-    <button class="btn" id="bulkToggleBtn">☐ Bulk Edit Mode</button>
+    <button class="btn" id="bulkToggleBtn">☐ Edit Mode</button>
   </div>
 
   <!-- ========== Filters ========== -->
@@ -834,7 +834,6 @@
       <div class="cardHeadLeft">
         <div>
           <div class="cardHeadTitle">Filters</div>
-          <div class="cardHeadHint">Keep this collapsed most of the time</div>
         </div>
       </div>
       <button class="collapseBtn" id="filtersToggle">Collapsed ▾</button>
@@ -892,10 +891,9 @@
       <div class="cardHeadLeft">
         <div>
           <div class="cardHeadTitle">Add / Edit</div>
-          <div class="cardHeadHint">Minimal form, opens only when needed</div>
         </div>
       </div>
-      <button class="collapseBtn" id="addToggle">Add new song ▾</button>
+      <button class="collapseBtn" id="addToggle">Add Song ▾</button>
     </div>
 
     <div class="cardBody hidden" id="addBody">
@@ -964,10 +962,6 @@
           <input id="importFile" type="file" accept="application/json" style="display:none" />
         </label>
       </div>
-
-      <div class="help tinyNote">
-        Sync tip: Export on device A → Import on device B. (GitHub hosts the page, but your data stays local unless you export/import.)
-      </div>
     </div>
   </div>
 
@@ -1007,9 +1001,6 @@
   <!-- ========== Song List ========== -->
   <div class="listWrap" id="list"></div>
 
-  <div class="help" style="text-align:center; margin-top:16px;">
-    Works offline after first load • Designed for 5,000+ songs
-  </div>
 
 </div>
 
