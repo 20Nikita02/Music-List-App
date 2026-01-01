@@ -34,19 +34,63 @@
       background: radial-gradient(1200px 700px at 30% 0%, #1b2b6a40, transparent 60%),
                   radial-gradient(900px 600px at 80% 30%, #6a3bf740, transparent 55%),
                   linear-gradient(160deg, var(--bg1), var(--bg2));
-      padding:18px 14px 40px;
+      background-attachment: fixed;
     }
 
-    .wrap{max-width:760px;margin:0 auto}
+    .wrap{
+      max-width:760px;
+      margin:0 auto;
+      padding:18px 14px 40px;
+      position:relative;
+    }
     .title{
       display:flex; align-items:center; gap:12px;
       padding:18px 16px;
       border:1px solid var(--stroke);
-      background: linear-gradient(180deg, #101a33aa, #0f1524aa);
+      background: linear-gradient(180deg, #101a33ee, #0f1524ee);
       border-radius:28px;
       box-shadow: var(--shadow);
-      position:sticky; top:10px; z-index:20;
       backdrop-filter: blur(10px);
+      margin-bottom:0;
+    }
+    
+    .stickySearch{
+      position:sticky;
+      top:10px;
+      z-index:20;
+      margin-top:12px;
+      padding:12px;
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, #101a33ee, #0f1524ee);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    
+    @media (max-width:640px){
+      .stickySearch{
+        top:8px;
+        padding:10px;
+        margin-top:10px;
+      }
+      .title{
+        padding:14px 12px;
+      }
+    }
+    
+    .stickySearch .input{
+      width:100%;
+      padding:14px 16px;
+      border-radius:16px;
+      border:1px solid var(--stroke2);
+      background:linear-gradient(180deg, #0b1020, #0f1524);
+      color:var(--text);
+      outline:none;
+      font-size:15px;
+    }
+    
+    .stickySearch .input::placeholder{
+      color:#93a0c9aa;
     }
     .icon{
       width:42px;height:42px;border-radius:14px;
@@ -106,19 +150,27 @@
       font-size:12.5px;
     }
     .collapseBtn:active{transform: translateY(1px)}
-    .cardBody{padding:14px 14px}
+    .cardBody{padding:12px 14px}
     .hidden{display:none !important}
 
     .grid2{display:grid; grid-template-columns: 1fr; gap:12px}
     @media (min-width:740px){
       .grid2{grid-template-columns: 1fr 1fr}
     }
+    
+    .grid3{display:grid; grid-template-columns: 1fr; gap:10px}
+    @media (min-width:500px){
+      .grid3{grid-template-columns: 1fr 1fr}
+    }
+    @media (min-width:740px){
+      .grid3{grid-template-columns: 1fr 1fr 1fr}
+    }
 
     .field label{
       display:block;
       color:var(--muted);
       font-size:12px;
-      margin:0 0 6px 2px;
+      margin:0 0 5px 2px;
     }
     .input, select{
       width:100%;
@@ -213,13 +265,13 @@
       font-size:16px;
       line-height:1.15;
       margin:0;
-      word-break:break-word; /* wrap long titles */
+      word-break:break-word;
     }
     .songSub{
       margin-top:8px;
       display:flex;
       gap:8px;
-      flex-wrap:wrap; /* keep compact but wrap if needed */
+      flex-wrap:wrap;
       align-items:center;
     }
     .tag{
@@ -237,6 +289,13 @@
     .tag.good{border-color:#39d98a33; background:linear-gradient(180deg,#0e2a1f,#0b1020); color:#c6ffe5}
     .tag.warn{border-color:#f7c94833; background:linear-gradient(180deg,#2a2412,#0b1020); color:#fff4c6}
     .tag.star{border-color:#7aa2ff33; background:linear-gradient(180deg,#101a33,#0b1020); color:#d7e2ff}
+    
+    .songId{
+      color:var(--muted);
+      font-size:12.5px;
+      font-weight:700;
+      margin-top:4px;
+    }
     .actions{
       display:flex;
       gap:8px;
@@ -280,7 +339,6 @@
     .chartTitle small{color:var(--muted); font-weight:700}
     canvas{width:100%; height:auto; display:block; border-radius:14px}
 
-    /* Keep things compact on mobile */
     .tinyNote{opacity:.75}
   </style>
 </head>
@@ -301,9 +359,15 @@
     </div>
   </div>
 
+  <!-- Sticky Search Bar -->
+  <div class="stickySearch">
+    <input class="input" id="quickSearch" placeholder="🔍 Quick search (artist or song)..." autocomplete="off" />
+  </div>
+
   <div class="row" id="countsRow">
     <div class="pill"><strong id="countSongs">0</strong><span class="dot">•</span> Songs</div>
     <div class="pill"><strong id="countArtists">0</strong><span class="dot">•</span> Artists</div>
+    <div class="pill"><strong id="countGenres">0</strong><span class="dot">•</span> Genres</div>
     <div class="pill"><strong id="countCountries">0</strong><span class="dot">•</span> Countries</div>
   </div>
 
@@ -320,7 +384,7 @@
     </div>
     <div class="cardBody hidden" id="filtersBody">
 
-      <div class="grid2">
+      <div class="grid3">
         <div class="field">
           <label>Search (artist or song)</label>
           <input class="input" id="q" placeholder="Type to search…" autocomplete="off" />
@@ -334,21 +398,21 @@
             <option value="xfav">X-Fav</option>
           </select>
         </div>
-
         <div class="field">
           <label>Genre</label>
           <select id="genreFilter"></select>
         </div>
+      </div>
+
+      <div class="grid3">
         <div class="field">
           <label>Language</label>
           <select id="langFilter"></select>
         </div>
-
         <div class="field">
           <label>Country</label>
           <select id="countryFilter"></select>
         </div>
-
         <div class="field">
           <label>Sort</label>
           <select id="sortMode">
@@ -504,9 +568,13 @@
 
   const listEl = $("list");
 
+  // Quick search
+  const quickSearchEl = $("quickSearch");
+
   // Counts
   const countSongsEl = $("countSongs");
   const countArtistsEl = $("countArtists");
+  const countGenresEl = $("countGenres");
   const countCountriesEl = $("countCountries");
 
   // Filters
@@ -638,7 +706,7 @@
     saveState();
     clearForm();
 
-    // hide the form after Save (your request)
+    // hide the form after Save
     setCollapsed(addBody, addToggle, true, "Add new song");
 
     renderEverything();
@@ -700,8 +768,13 @@
     }
   });
 
-  // Live-search (doesn't auto-save, only UI)
+  // Live-search
   qEl.addEventListener("input", () => renderEverything());
+  quickSearchEl.addEventListener("input", () => {
+    // Sync with the filters search
+    qEl.value = quickSearchEl.value;
+    renderEverything();
+  });
 
   // ---------------- Rendering ----------------
 
@@ -710,13 +783,15 @@
 
     const filtered = getFilteredSongs();
 
-    // counts (from full DB, not filtered — matches your “how many I listened” idea)
+    // counts from full DB
     const all = getSortedSongs(state.songs);
     const uniqArtists = unique(all.map(s => norm(s.artist))).length;
+    const uniqGenres = unique(all.map(s => norm(s.genre))).length;
     const uniqCountries = unique(all.map(s => norm(s.country))).length;
 
     countSongsEl.textContent = all.length.toString();
     countArtistsEl.textContent = uniqArtists.toString();
+    countGenresEl.textContent = uniqGenres.toString();
     countCountriesEl.textContent = uniqCountries.toString();
 
     renderList(filtered);
@@ -736,13 +811,13 @@
       return;
     }
 
-    // Build artist ordering based on GLOBAL sorted songs (so artist numbering is stable)
+    // Build artist ordering based on GLOBAL sorted songs
     const allSorted = getSortedSongs(state.songs);
-    const artistOrder = unique(allSorted.map(s => norm(s.artist))); // in sorted order already
+    const artistOrder = unique(allSorted.map(s => norm(s.artist)));
     const artistIndexMap = new Map();
     artistOrder.forEach((a, i) => artistIndexMap.set(a, i+1));
 
-    // Global song numbering based on GLOBAL sorted list
+    // Global song numbering
     const songIndexMap = new Map();
     allSorted.forEach((s, i) => songIndexMap.set(s.id, i+1));
 
@@ -754,7 +829,7 @@
       grouped.get(key).push(s);
     }
 
-    // Render artists in global A–Z order, but only those in filtered
+    // Render artists in global A–Z order
     for (const artistKey of artistOrder){
       const arr = grouped.get(artistKey);
       if (!arr || !arr.length) continue;
@@ -813,23 +888,24 @@
 
         const titleWrap = document.createElement("div");
         titleWrap.style.minWidth = "0";
+        titleWrap.style.flex = "1 1 auto";
 
         const title = document.createElement("div");
         title.className = "songTitle";
         title.textContent = s.title;
 
         const sBadge = document.createElement("div");
-        sBadge.className = "tag star";
-        sBadge.textContent = "#S" + padSong(songIndexMap.get(s.id)); // simple & readable
+        sBadge.className = "songId";
+        sBadge.textContent = "#S" + padSong(songIndexMap.get(s.id));
 
         titleWrap.appendChild(title);
+        titleWrap.appendChild(sBadge);
         top.appendChild(titleWrap);
-        top.appendChild(sBadge);
 
         const sub = document.createElement("div");
         sub.className = "songSub";
 
-        // Put Genre, Language, Country NEXT TO EACH OTHER (your request)
+        // Genre, Language, Country tags
         const g = mkTag(s.genre);
         const l = mkTag(s.language);
         const c = mkTag(s.country);
@@ -838,7 +914,7 @@
         sub.appendChild(l);
         sub.appendChild(c);
 
-        // Favorite compact (inline, minimal space)
+        // Favorite tags
         if (s.fav === "fav") sub.appendChild(mkTag("★ Fav", "good"));
         if (s.fav === "xfav") sub.appendChild(mkTag("★★ X-Fav", "warn"));
 
@@ -871,14 +947,13 @@
       listEl.appendChild(block);
     }
 
-    // suggestions list
     rebuildArtistDatalist();
   }
 
   // ---------------- Charts ----------------
 
   function drawCharts(){
-    // Genre distribution from FULL DB (not filtered) to keep stats stable
+    // Genre distribution from FULL DB
     const all = getSortedSongs(state.songs);
     const counts = new Map();
     for (const s of all){
@@ -886,15 +961,12 @@
       counts.set(g, (counts.get(g) || 0) + 1);
     }
 
-    // Sort by count desc
     const entries = Array.from(counts.entries()).sort((a,b) => b[1]-a[1]);
-    chartMeta.textContent = `${entries.length} genre(s)`;
+    chartMeta.textContent = `Top ${entries.length} shown`;
 
-    // Responsive canvas with DPR
     const ctx = genreChartCanvas.getContext("2d");
     const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
 
-    // Dynamic height: one row per genre (horizontal bars)
     const rowH = 30;
     const padTop = 14, padBottom = 14;
     const heightCss = Math.max(180, padTop + padBottom + entries.length * rowH);
@@ -906,31 +978,25 @@
 
     ctx.setTransform(dpr,0,0,dpr,0,0);
 
-    // background
     ctx.clearRect(0,0,widthCss,heightCss);
 
-    // theme colors
     const text = getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#eaf0ff";
     const muted = getComputedStyle(document.documentElement).getPropertyValue("--muted").trim() || "#a9b3d6";
     const stroke = "rgba(255,255,255,0.10)";
 
-    // metrics
     const maxVal = Math.max(1, ...entries.map(e => e[1]));
     const leftPad = 12;
     const rightPad = 12;
 
-    // label column width (wrap labels here)
-    const labelCol = Math.min(240, Math.max(150, Math.floor(widthCss * 0.42)));
+    const labelCol = Math.min(280, Math.max(180, Math.floor(widthCss * 0.50)));
     const barX = leftPad + labelCol + 10;
     const barW = widthCss - barX - rightPad;
 
-    // frame
     roundRect(ctx, 0.5, 0.5, widthCss-1, heightCss-1, 14, "rgba(255,255,255,0.06)");
 
     ctx.font = "700 12px system-ui";
     ctx.fillStyle = muted;
 
-    // grid lines
     ctx.strokeStyle = stroke;
     ctx.lineWidth = 1;
     for (let i=0;i<=4;i++){
@@ -941,28 +1007,22 @@
       ctx.stroke();
     }
 
-    // bars
     for (let i=0;i<entries.length;i++){
       const [label, val] = entries[i];
       const y = padTop + i*rowH;
 
-      // label wrapping (prevents overlap)
       drawWrappedText(ctx, label, leftPad, y+6, labelCol, 14, text, muted);
 
-      // bar
-      const w = Math.max(2, Math.round((val/maxVal)*barW));
+      const w = Math.max(2, Math.round((val/maxVal)*barW*0.65));
       const barY = y + 6;
       const barH = 16;
 
-      // subtle bar bg
       ctx.fillStyle = "rgba(122,162,255,0.18)";
       roundRectFill(ctx, barX, barY, barW, barH, 10);
 
-      // bar fg
       ctx.fillStyle = "rgba(122,162,255,0.55)";
       roundRectFill(ctx, barX, barY, w, barH, 10);
 
-      // value
       ctx.fillStyle = muted;
       ctx.font = "800 12px system-ui";
       ctx.fillText(String(val), barX + w + 8, barY + 13);
@@ -1007,12 +1067,10 @@
   function startEdit(s){
     editingId = s.id;
 
-    // open the add/edit panel
     setCollapsed(addBody, addToggle, false);
     songTitleEl.value = s.title;
     artistNameEl.value = s.artist;
 
-    // ensure current values exist in options
     ensureOption("genres", s.genre);
     ensureOption("langs", s.language);
     ensureOption("countries", s.country);
@@ -1046,7 +1104,6 @@
     ensureOption(bucket, val);
     saveState();
     rebuildSelects();
-    // select newly added
     selectA.value = val;
     if (selectB) selectB.value = val;
     if (bucket === "genres") newGenreEl.value = "";
@@ -1072,17 +1129,14 @@
     for (const l of DEFAULT_LANGS) ensureOption("langs", l);
     for (const c of DEFAULT_COUNTRIES) ensureOption("countries", c);
 
-    // Make sure English exists and is default in selects
     ensureOption("langs", "English");
   }
 
   function rebuildSelects(){
-    // selects with "Any" for filters
     rebuildSelect(genreFilterEl, ["any"].concat(state.options.genres), state.ui.genreFilter || "any", (v)=> v==="any" ? "Any" : v);
     rebuildSelect(langFilterEl, ["any"].concat(state.options.langs), state.ui.langFilter || "any", (v)=> v==="any" ? "Any" : v);
     rebuildSelect(countryFilterEl, ["any"].concat(state.options.countries), state.ui.countryFilter || "any", (v)=> v==="any" ? "Any" : v);
 
-    // add/edit selects
     rebuildSelect(genreSelectEl, state.options.genres, genreSelectEl.value || state.options.genres[0]);
     rebuildSelect(langSelectEl, state.options.langs, langSelectEl.value || "English");
     rebuildSelect(countrySelectEl, state.options.countries, countrySelectEl.value || state.options.countries[0]);
@@ -1100,7 +1154,6 @@
       opt.textContent = labelFn ? labelFn(v) : v;
       selectEl.appendChild(opt);
     }
-    // prefer provided selected, else keep old
     const candidate = selected ?? old;
     if (candidate && Array.from(selectEl.options).some(o => o.value === candidate)){
       selectEl.value = candidate;
@@ -1122,6 +1175,7 @@
 
   function syncFilterInputs(){
     qEl.value = state.ui.q || qEl.value || "";
+    quickSearchEl.value = qEl.value; // Keep sticky search in sync
     favFilterEl.value = state.ui.favFilter || "any";
     genreFilterEl.value = state.ui.genreFilter || "any";
     langFilterEl.value = state.ui.langFilter || "any";
@@ -1130,7 +1184,7 @@
 
   function getFilteredSongs(){
     const base = getSortedSongs(state.songs);
-    const q = (qEl.value || state.ui.q || "").trim().toLowerCase();
+    const q = (quickSearchEl.value || qEl.value || state.ui.q || "").trim().toLowerCase();
     const fav = state.ui.favFilter || favFilterEl.value || "any";
     const g = state.ui.genreFilter || genreFilterEl.value || "any";
     const l = state.ui.langFilter || langFilterEl.value || "any";
@@ -1164,10 +1218,7 @@
   }
 
   function padSong(n){
-    // you wanted simple counting; keep it readable and consistent (4 digits usually)
-    const s = String(n || 0);
-    if (s.length >= 4) return s;
-    return s.padStart(4, "0");
+    return String(n || 0);
   }
 
   function unique(arr){
@@ -1221,7 +1272,6 @@
   }
 
   function cryptoId(){
-    // small unique id (good enough for personal use)
     return "s_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
   }
 
@@ -1253,7 +1303,6 @@
   }
 
   function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, colorPrimary, colorMuted){
-    // Two-line max to keep compact; if still long, ellipsis
     const words = String(text).split(" ");
     let line = "";
     const lines = [];
@@ -1265,12 +1314,11 @@
       } else {
         lines.push(line);
         line = w;
-        if (lines.length === 2) break; // max 2 lines
+        if (lines.length === 2) break;
       }
     }
     if (line && lines.length < 2) lines.push(line);
 
-    // If overflow (more words left), add ellipsis to second line
     const usedWords = lines.join(" ").split(" ").length;
     if (usedWords < words.length && lines.length){
       let second = lines[lines.length-1];
@@ -1280,7 +1328,6 @@
       lines[lines.length-1] = second + "…";
     }
 
-    // draw
     ctx.font = "900 12px system-ui";
     ctx.fillStyle = colorPrimary;
     ctx.fillText(lines[0] || "", x, y + 12);
