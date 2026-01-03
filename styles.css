@@ -218,7 +218,21 @@ h1{
 
 .collapseBtn:active{transform: translateY(1px)}
 
-.cardBody{padding:12px 14px}
+.cardBody{
+  padding:12px 14px;
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+  opacity: 1;
+}
+
+.cardBody.hidden{
+  max-height: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  opacity: 0;
+  overflow: hidden;
+}
 
 .hidden{display:none !important}
 
@@ -609,6 +623,18 @@ select{
   background: linear-gradient(180deg, #0b1020, #0f1524);
   font-size:12px;
   gap:6px;
+  cursor:pointer;  
+  transition: all 0.2s ease; 
+}
+
+.compactGenre:hover{  
+  border-color:rgba(122,162,255,0.4);
+  background: linear-gradient(180deg, #121b33, #0f1524);
+  transform: translateY(-1px);
+}
+
+.compactGenre:active{  
+  transform: translateY(0);
 }
 
 .compactGenreName{
@@ -778,6 +804,76 @@ select{
   border:1px solid rgba(122,162,255,0.4);
   background:linear-gradient(180deg, rgba(122,162,255,0.3), rgba(122,162,255,0.15));
   color:var(--text);
+}
+
+/* ========== Undo Toast ============*/
+.undoToast{
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background:linear-gradient(180deg, #101a33f5, #0f1524f5);
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  padding:14px 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+  backdrop-filter:blur(12px);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  z-index:150;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp{
+  from{
+    transform:translateX(-50%) translateY(20px);
+    opacity:0;
+  }
+  to{
+    transform:translateX(-50%) translateY(0);
+    opacity:1;
+  }
+}
+
+.undoToast .message{
+  color:var(--text);
+  font-size:13px;
+  font-weight:700;
+}
+
+.undoToast .undoBtn{
+  padding:8px 14px;
+  border-radius:12px;
+  border:1px solid rgba(122,162,255,0.4);
+  background:linear-gradient(180deg, rgba(122,162,255,0.3), rgba(122,162,255,0.15));
+  color:var(--text);
+  font-weight:800;
+  font-size:12px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.undoToast .undoBtn:active{
+  transform:scale(0.95);
+}
+
+/* ===== Mobiel responsive ======= */
+@media (max-width:640px){
+  .undoToast{
+    bottom:90px;
+    max-width:calc(100% - 40px);
+    font-size:12px;
+  }
+}
+
+/* ========== Search Highlighting ========== */
+mark{
+  background:rgba(122,162,255,0.35);
+  color:var(--text);
+  padding:2px 4px;
+  border-radius:4px;
+  font-weight:900;
 }
 
 /* ========== Media Queries ========== */

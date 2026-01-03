@@ -23,6 +23,8 @@
   let bulkMode = false;
   let selectedSongs = new Set();
   let pendingDuplicateSong = null;
+  let deletedSongs = [];
+  let undoTimeout = null;
 
   // ========== ELEMENT REFERENCES ==========
   const $ = (id) => document.getElementById(id);
@@ -125,6 +127,7 @@
     state.ui.genreFilter = genreFilterEl.value;
     state.ui.langFilter = langFilterEl.value;
     state.ui.countryFilter = countryFilterEl.value;
+    state.ui.sortMode = $("sortMode").value;  // NIEUW
     saveState();
     renderEverything();
     setCollapsed(filtersBody, filtersToggle, true);
@@ -533,7 +536,8 @@
 
         const title = document.createElement("div");
         title.className = "songTitle";
-        title.textContent = s.title;
+        const searchQuery = state.ui.q || quickSearchEl.value || "";
+        title.innerHTML = highlightText(s.title, searchQuery);
 
         const metaWrap = document.createElement("div");
         metaWrap.style.display = "flex";
@@ -587,11 +591,18 @@
         editBtn.addEventListener("click", () => startEdit(s));
 
         const delBtn = iconBtn("🗑", "Delete", true);
-        delBtn.addEventListener("click", () => {
-          if (!confirm(`Delete "${s.title}" by ${s.artist}?`)) return;
+        delBtn.addEventListener("click", () => 
+        {
+          // Opslaan voor undo
+          deletedSongs.push({song: s, timestamp: Date.now()});
+
+          // Delete
           state.songs = state.songs.filter(x => x.id !== s.id);
           saveState();
           renderEverything();
+
+          // Toon undo toast
+          showUndoToast(s.title);
         });
 
         actions.appendChild(editBtn);
@@ -640,6 +651,20 @@
         <div class="bubbleName">${name}</div>
         <div class="bubbleCount">${count} songs</div>
       `;
+      
+      // Click om te filteren
+      bubble.addEventListener('click', () => {
+        state.ui.genreFilter = name;
+        genreFilterEl.value = name;
+        saveState();
+        renderEverything();
+        
+        // Scroll naar song list (smooth op mobiel)
+        setTimeout(() => {
+          listEl.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }, 100);
+      });
+      
       topBubblesEl.appendChild(bubble);
     });
     
@@ -655,6 +680,21 @@
           <div class="compactGenreName">${name}</div>
           <div class="compactGenreCount">${count}</div>
         `;
+        
+        // NIEUW: Click om te filteren
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', () => {
+          state.ui.genreFilter = name;
+          genreFilterEl.value = name;
+          saveState();
+          renderEverything();
+          
+          // Scroll naar song list
+          setTimeout(() => {
+            listEl.scrollIntoView({behavior: 'smooth', block: 'start'});
+          }, 100);
+        });
+        
         restListEl.appendChild(item);
       });
     } else {
@@ -810,6 +850,7 @@
     genreFilterEl.value = state.ui.genreFilter || "any";
     langFilterEl.value = state.ui.langFilter || "any";
     countryFilterEl.value = state.ui.countryFilter || "any";
+    $("sortMode").value = state.ui.sortMode || "artist_song";  // NIEUW
   }
 
   function getFilteredSongs(){
@@ -838,13 +879,54 @@
   }
 
   function getSortedSongs(arr){
+    const sortMode = state.ui.sortMode || "artist_song";
+    
     return [...arr].sort((a,b) => {
+      // Newest First
+      if (sortMode === "newest") {
+        return (b.updatedAt||0) - (a.updatedAt||0);
+      }
+      
+      // Oldest First
+      if (sortMode === "oldest") {
+        return (a.updatedAt||0) - (b.updatedAt||0);
+      }
+      
+      // Favorites First
+      if (sortMode === "most_fav") {
+        const favOrder = {xfav: 0, fav: 1, none: 2};
+        const favA = favOrder[a.fav] ?? 2;
+        const favB = favOrder[b.fav] ?? 2;
+        if (favA !== favB) return favA - favB;
+        // Dan artist -> song
+        const aa = norm(a.artist), ab = norm(b.artist);
+        if (aa !== ab) return aa.localeCompare(ab, undefined, {sensitivity:"base"});
+        const ta = norm(a.title), tb = norm(b.title);
+        return ta.localeCompare(tb, undefined, {sensitivity:"base"});
+      }
+      
+      // Song Title A-Z
+      if (sortMode === "song_title") {
+        const ta = norm(a.title), tb = norm(b.title);
+        if (ta !== tb) return ta.localeCompare(tb, undefined, {sensitivity:"base"});
+        const aa = norm(a.artist), ab = norm(b.artist);
+        return aa.localeCompare(ab, undefined, {sensitivity:"base"});
+      }
+      
+      // Artist A-Z → Song A-Z (default)
       const aa = norm(a.artist), ab = norm(b.artist);
       if (aa !== ab) return aa.localeCompare(ab, undefined, {sensitivity:"base"});
       const ta = norm(a.title), tb = norm(b.title);
       if (ta !== tb) return ta.localeCompare(tb, undefined, {sensitivity:"base"});
       return (a.updatedAt||0) - (b.updatedAt||0);
     });
+  }
+
+  function highlightText(text, query) {
+    if (!query || query.trim() === "") return text;
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    return text.replace(regex, '<mark>$1</mark>');
   }
 
   function padSong(n){
@@ -957,4 +1039,47 @@
     duplicateModal.classList.remove("hidden");
   }
 
+    // Undo Toast functies
+function showUndoToast(songTitle) {
+  // Verwijder oude toast
+  const oldToast = document.querySelector('.undoToast');
+  if (oldToast) oldToast.remove();
+  
+  // Clear oude timeout
+  if (undoTimeout) clearTimeout(undoTimeout);
+  
+  // Maak nieuwe toast
+  const toast = document.createElement('div');
+  toast.className = 'undoToast';
+  toast.innerHTML = `
+    <div class="message">Deleted "${songTitle}"</div>
+    <button class="undoBtn">Undo</button>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Undo button
+  toast.querySelector('.undoBtn').addEventListener('click', () => {
+    undoDelete();
+    toast.remove();
+  });
+  
+  // Auto-hide na 5 seconden
+  undoTimeout = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(20px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
+function undoDelete() {
+  if (deletedSongs.length === 0) return;
+  
+  const {song} = deletedSongs.pop();
+  state.songs.push(song);
+  saveState();
+  renderEverything();
+  
+  if (undoTimeout) clearTimeout(undoTimeout);
+}
 })();
