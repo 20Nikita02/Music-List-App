@@ -162,10 +162,10 @@
     const willCollapse = !addBody.classList.contains("hidden");
     if (willCollapse) {
       addBody.classList.add("hidden");
-      addToggle.textContent = "+ ADD";
+      addToggle.textContent = "+";
     } else {
       addBody.classList.remove("hidden");
-      addToggle.textContent = "✕ Close";
+      addToggle.textContent = "✕";
       setTimeout(() => songTitleEl.focus(), 50);
     }
   });
@@ -734,7 +734,7 @@
   function startEdit(s){
     editingId = s.id;
     addBody.classList.remove("hidden");
-    addToggle.textContent = "✕ Close";
+    addToggle.textContent = "✕";
     
     songTitleEl.value = s.title;
     artistNameEl.value = s.artist;
@@ -767,7 +767,7 @@
     newLangEl.value = "";
     newCountryEl.value = "";
     
-    addToggle.textContent = "+ ADD";
+    addToggle.textContent = "+";
   }
 
   function addOption(bucket, raw, selectA, selectB){
