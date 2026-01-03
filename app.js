@@ -162,7 +162,7 @@
     const willCollapse = !addBody.classList.contains("hidden");
     if (willCollapse) {
       addBody.classList.add("hidden");
-      addToggle.textContent = "+";
+      addToggle.textContent = "✚";
     } else {
       addBody.classList.remove("hidden");
       addToggle.textContent = "✕";
@@ -767,7 +767,7 @@
     newLangEl.value = "";
     newCountryEl.value = "";
     
-    addToggle.textContent = "+";
+    addToggle.textContent = "✚";
   }
 
   function addOption(bucket, raw, selectA, selectB){
