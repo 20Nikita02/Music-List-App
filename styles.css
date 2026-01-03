@@ -640,8 +640,8 @@ select{
 
 /* ========== Bulk Edit ========== */
 .checkbox{
-  width:20px;
-  height:20px;
+  width:16px;
+  height:16px;
   border-radius:5px;
   border:2px solid var(--stroke2);
   background:rgba(0,0,0,.3);
