@@ -26,8 +26,8 @@
 
   <!-- ========== Sticky Search ========== -->
   <div class="stickySearch">
-    <input class="input" id="quickSearch" placeholder="🔍 Quick search (artist or song)..." autocomplete="off" />
-    <button class="btn" id="addToggle">+</button>
+    <input class="input" id="quickSearch" placeholder="<i class="fa fa-search"></i> Quick search..." autocomplete="off" />
+    <button class="btn" id="addToggle">🞣</button>
     <button class="btn iconOnly" id="bulkToggleBtn" title="Select songs">☐</button>
   </div>
 
@@ -58,8 +58,8 @@
           <select id="favFilter">
             <option value="any">Any</option>
             <option value="none">None</option>
-            <option value="fav">Fav</option>
-            <option value="xfav">X-Fav</option>
+            <option value="fav">Like</option>
+            <option value="xfav">Fav</option>
           </select>
         </div>
         <div class="field">
@@ -146,14 +146,14 @@
           <label>Favorite</label>
           <select id="favSelect">
             <option value="none">None</option>
-            <option value="fav">★ Fav</option>
-            <option value="xfav">★★ X-Fav</option>
+            <option value="fav">♥ Like</option>
+            <option value="xfav">★ Fav</option>
           </select>
         </div>
         
         <div class="field">
           <label>Release Year (optional)</label>
-          <input class="input" id="yearInput" type="number" placeholder="e.g. 2023" min="1900" max="2030" />
+          <input class="input" id="yearInput" type="number" placeholder="e.g. 2023" min="1800" max="2100" />
         </div>
       </div>
 

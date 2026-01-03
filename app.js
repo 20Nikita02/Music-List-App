@@ -581,8 +581,8 @@
         sub.appendChild(l);
         sub.appendChild(c);
 
-        if (s.fav === "fav") sub.appendChild(mkTag("★ Fav", "good"));
-        if (s.fav === "xfav") sub.appendChild(mkTag("★★ X-Fav", "warn"));
+        if (s.fav === "fav") sub.appendChild(mkTag("♥ Like", "good"));
+        if (s.fav === "xfav") sub.appendChild(mkTag("★ Fav", "warn"));
 
         const actions = document.createElement("div");
         actions.className = "actions";
