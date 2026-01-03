@@ -639,9 +639,9 @@ select{
 
 /* ========== Bulk Edit ========== */
 .checkbox{
-  width:25px;
-  height:25px;
-  border-radius:6px;
+  width:32px;
+  height:32px;
+  border-radius:8px;
   border:2px solid var(--stroke2);
   background:rgba(0,0,0,.3);
   cursor:pointer;
@@ -659,7 +659,7 @@ select{
 .checkbox.checked::after{
   content:'✓';
   color:white;
-  font-size:15px;
+  font-size:19px;
   font-weight:900;
 }
 
