@@ -14,9 +14,17 @@
   <div class="title">
     <div class="icon" aria-hidden="true">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <path d="M9 18V5l12-2v13" stroke="#cfe0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="7" cy="18" r="3" stroke="#cfe0ff" stroke-width="2"/>
-        <circle cx="19" cy="16" r="3" stroke="#cfe0ff" stroke-width="2"/>
+        <defs>
+          <radialGradient id="v5s">
+            <stop offset="0%" stop-color="#ff5c9e"/>
+            <stop offset="100%" stop-color="#8e4cff"/>
+          </radialGradient>
+        </defs>
+        <circle cx="11.6" cy="12" r="10" stroke="#ff5c9e" stroke-width="2" opacity="0.4"/>
+        <circle cx="12.4" cy="12" r="10" stroke="#8e4cff" stroke-width="2" opacity="0.4"/>
+        <circle cx="12" cy="12" r="10" stroke="url(#v5s)" stroke-width="2.5"/>
+        <circle cx="12" cy="12" r="5" fill="url(#v5s)"/>
+        <circle cx="12" cy="12" r="2.5" fill="#0f0b20"/>
       </svg>
     </div>
     <div style="min-width:0">
