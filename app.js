@@ -461,11 +461,18 @@
         const artistCheckbox = document.createElement("div");
         artistCheckbox.className = "checkbox";
         artistCheckbox.dataset.artist = artistKey;
+        
+        // Check if ALL songs from this artist are selected
+        const allSelected = arr.every(s => selectedSongs.has(s.id));
+        if (allSelected) {
+          artistCheckbox.classList.add("checked");
+        }
+        
         artistCheckbox.addEventListener("click", () => {
-          artistCheckbox.classList.toggle("checked");
-          const isChecked = artistCheckbox.classList.contains("checked");
+          const willCheck = !artistCheckbox.classList.contains("checked");
+          
           arr.forEach(s => {
-            if (isChecked) {
+            if (willCheck) {
               selectedSongs.add(s.id);
             } else {
               selectedSongs.delete(s.id);
