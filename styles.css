@@ -113,7 +113,7 @@ h1{
 
 .stickySearch .btn.iconOnly{
   padding:12px 12px;
-  min-width:auto;
+  /* min-width:auto; */
   font-size:25px;
   line-height:1;
 }
@@ -890,4 +890,35 @@ mark{
 @media (min-width:740px){
   .grid2{grid-template-columns: 1fr 1fr}
   .grid3{grid-template-columns: 1fr 1fr 1fr}
+}
+
+/* ========== Extra Mobiel Optimalisaties ========== */
+@media (max-width:640px){
+  /* Larger touch targets */
+  .bubble{
+    min-height:44px;  /* Apple's aanbevolen touch target */
+  }
+  
+  .compactGenre{
+    min-height:44px;
+  }
+  
+  .iconBtn{
+    width:44px;
+    height:44px;
+  }
+  
+  /* Better text wrapping */
+  .songTitle{
+    font-size:15px;
+  }
+  
+  .artistName{
+    font-size:17px;
+  }
+  
+  /* Smooth scrolling */
+  html{
+    scroll-behavior: smooth;
+  }
 }
