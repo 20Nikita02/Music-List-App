@@ -588,6 +588,7 @@
         actions.className = "actions";
 
         const editBtn = iconBtn("✎", "Edit");
+        editBtn.style.fontSize = "18px"; 
         editBtn.addEventListener("click", () => startEdit(s));
 
         const delBtn = iconBtn("🗑", "Delete", true);
