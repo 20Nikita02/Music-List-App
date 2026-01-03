@@ -113,7 +113,7 @@ h1{
 
 .stickySearch .btn.iconOnly{
   padding:12px;
-  min-width:46px;
+  min-width:auto;
   font-size:26px;
   line-height:1;
 }
