@@ -162,7 +162,7 @@
     const willCollapse = !addBody.classList.contains("hidden");
     if (willCollapse) {
       addBody.classList.add("hidden");
-      addToggle.textContent = "+ Add Song";
+      addToggle.textContent = "+ ADD";
     } else {
       addBody.classList.remove("hidden");
       addToggle.textContent = "✕ Close";
@@ -681,7 +681,7 @@
           <div class="compactGenreCount">${count}</div>
         `;
         
-        // NIEUW: Click om te filteren
+        // Click om te filteren
         item.style.cursor = 'pointer';
         item.addEventListener('click', () => {
           state.ui.genreFilter = name;
@@ -766,7 +766,7 @@
     newLangEl.value = "";
     newCountryEl.value = "";
     
-    addToggle.textContent = "+ Add Song";
+    addToggle.textContent = "+ ADD";
   }
 
   function addOption(bucket, raw, selectA, selectB){
