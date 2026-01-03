@@ -127,7 +127,7 @@
     state.ui.genreFilter = genreFilterEl.value;
     state.ui.langFilter = langFilterEl.value;
     state.ui.countryFilter = countryFilterEl.value;
-    state.ui.sortMode = $("sortMode").value;  // NIEUW
+    state.ui.sortMode = $("sortMode").value;  
     saveState();
     renderEverything();
     setCollapsed(filtersBody, filtersToggle, true);
@@ -851,7 +851,7 @@
     genreFilterEl.value = state.ui.genreFilter || "any";
     langFilterEl.value = state.ui.langFilter || "any";
     countryFilterEl.value = state.ui.countryFilter || "any";
-    $("sortMode").value = state.ui.sortMode || "artist_song";  // NIEUW
+    $("sortMode").value = state.ui.sortMode || "artist_song"; 
   }
 
   function getFilteredSongs(){
@@ -869,8 +869,8 @@
       }
       if (fav !== "any"){
         if (fav === "none" && s.fav !== "none") return false;
+        if (fav === "like" && s.fav !== "like") return false;
         if (fav === "fav" && s.fav !== "fav") return false;
-        if (fav === "xfav" && s.fav !== "xfav") return false;
       }
       if (g !== "any" && norm(s.genre) !== norm(g)) return false;
       if (l !== "any" && norm(s.language) !== norm(l)) return false;
