@@ -25,6 +25,7 @@
   let pendingDuplicateSong = null;
   let deletedSongs = [];
   let undoTimeout = null;
+  let collapsedArtists = new Set();
 
   // ========== ELEMENT REFERENCES ==========
   const $ = (id) => document.getElementById(id);
@@ -446,12 +447,28 @@
       if (!arr || !arr.length) continue;
 
       const artistName = arr[0].artist;
+      const isCollapsed = collapsedArtists.has(artistKey);
 
       const block = document.createElement("div");
       block.className = "artistBlock";
 
       const head = document.createElement("div");
       head.className = "artistHead";
+      
+      // Toggle collapse on click
+      head.addEventListener("click", (e) => {
+        // Don't toggle if clicking checkbox
+        if (e.target.classList.contains('checkbox') || e.target.closest('.checkbox')) {
+          return;
+        }
+        
+        if (collapsedArtists.has(artistKey)) {
+          collapsedArtists.delete(artistKey);
+        } else {
+          collapsedArtists.add(artistKey);
+        }
+        renderEverything();
+      });
 
       const left = document.createElement("div");
       left.className = "artistLeft";
@@ -468,7 +485,8 @@
           artistCheckbox.classList.add("checked");
         }
         
-        artistCheckbox.addEventListener("click", () => {
+        artistCheckbox.addEventListener("click", (e) => {
+          e.stopPropagation(); // Prevent artist collapse toggle
           const willCheck = !artistCheckbox.classList.contains("checked");
           
           arr.forEach(s => {
@@ -501,12 +519,28 @@
 
       const right = document.createElement("div");
       right.className = "artistRight";
-      right.textContent = `${arr.length} shown`;
+      right.style.display = "flex";
+      right.style.alignItems = "center";
+      right.style.gap = "8px";
+      
+      const countText = document.createElement("span");
+      countText.textContent = `${arr.length} shown`;
+      
+      const indicator = document.createElement("div");
+      indicator.className = "collapseIndicator" + (isCollapsed ? " collapsed" : "");
+      indicator.textContent = "▾";
+
+      right.appendChild(countText);
+      right.appendChild(indicator);
 
       head.appendChild(left);
       head.appendChild(right);
 
       block.appendChild(head);
+
+      // Songs container
+      const songsContainer = document.createElement("div");
+      songsContainer.className = "songsContainer" + (isCollapsed ? " collapsed" : "");
 
       // Render songs
       for (const s of arr){
@@ -622,9 +656,10 @@
         row.appendChild(main);
         row.appendChild(actions);
 
-        block.appendChild(row);
+        songsContainer.appendChild(row);
       }
 
+      block.appendChild(songsContainer);
       listEl.appendChild(block);
     }
 

@@ -353,6 +353,36 @@ select{
   padding:12px 12px;
   border-bottom:1px solid var(--stroke);
   background:linear-gradient(180deg,#101a33b0,#0f1524b0);
+  cursor:pointer;
+  user-select:none;
+}
+
+.artistHead:active{
+  background:linear-gradient(180deg,#121b33b0,#101a33b0);
+}
+
+.songsContainer{
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.songsContainer.collapsed{
+  max-height: 0 !important;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.collapseIndicator{
+  color:var(--muted);
+  font-size:18px;
+  transition: transform 0.3s ease;
+  flex-shrink:0;
+}
+
+.collapseIndicator.collapsed{
+  transform: rotate(-90deg);
 }
 
 .artistLeft{
